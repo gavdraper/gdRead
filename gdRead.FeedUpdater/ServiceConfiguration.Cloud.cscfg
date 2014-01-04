@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ServiceConfiguration serviceName="gdReader.FeedUpdater" xmlns="http://schemas.microsoft.com/ServiceHosting/2008/10/ServiceConfiguration" osFamily="3" osVersion="*" schemaVersion="2013-10.2.2">
+  <Role name="gdRead.FeedUpdater.Worker">
+    <Instances count="1" />
+    <ConfigurationSettings>
+      <Setting name="Microsoft.WindowsAzure.Plugins.Diagnostics.ConnectionString" value="DefaultEndpointsProtocol=https;AccountName=gdread;AccountKey=RrDZpGzHTGAVnXjN8FNtFXH+WuvdmeasyB1LqrzCxYx9d1IHM1bmi/5qQgogJAgKjKpeon0XEeaOJJzo03uCrg==" />
+    </ConfigurationSettings>
+  </Role>
+</ServiceConfiguration>

@@ -1,0 +1,53 @@
+﻿<h2>MyFeeds</h2>
+
+<div class="container" ng-app="gdReadModule" ng-controller="myFeedCtrl">
+    <div class="row">
+        <div class="col-md-2">
+        <!--    <select>
+                <option value="Un-Read">Un-Read</option>
+                <option value="UnRead">All</option>
+            </select>-->
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-3 FeedList">
+            <button ng-click="openAddFeedModal()">Add Feed</button>
+            <!--<button ng-click="selectAllFeeds()">All Feeds</button>-->
+            <ul>
+                <li ng-repeat="feed in feeds"><button ng-click="feedSelected(feed)">{{feed.Title}}</button></li>
+            </ul>
+        </div>
+        <div class="col-md-9">
+            <h2>{{currentFeed.title}}</h2>
+            <div ng-repeat="post in currentFeed.Posts">
+                <div class="PostTitle" ng-click="selectPost(post)">{{post.PublishDate}} - <span ng-class="{UnReadPost:!post.Read}">{{post.Name}}</span></div>
+                <div ng-hide="!post.Selected" ng-bind-html="post.Content"></div>
+            </div>
+        </div>
+    </div>
+
+    <script type="text/ng-template" id="addFeedWindow.html">
+        <div class="modal-header">
+            <h3>Add Feed</h3>
+        </div>
+        <div class="modal-body">
+            Feed URL :  <input type="text" ng-model="modelValues.url" />
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-primary" ng-click="ok()">OK</button>
+            <button class="btn btn-warning" ng-click="cancel()">Cancel</button>
+        </div>
+    </script>
+
+</div>
+
+
+
+@section scripts
+{
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.6/angular.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.6/angular-sanitize.js"></script>
+    <script src="http://angular-ui.github.io/bootstrap/ui-bootstrap-tpls-0.9.0.js"></script>
+    <script src="~/Scripts/myFeeds.js"></script>
+}
