@@ -50,13 +50,32 @@ input[type="checkbox"].input-validation-error {
 .UnReadPost {
     font-weight: bold;
 }
+
 .PostTitle {
-    margin-bottom: 5px;
-    background-color: #b6afaf;    
-    border-style: solid;
+    border-bottom-style: solid;
+    cursor: pointer;
+    cursor: hand;
     border-width: 1px;
-    border-color: #000000;
+    border-color: #444444;
 }
-.FeedList {
+
+#FeedList {
     font-size: 8pt;
 }
+
+    #FeedList ul {
+        margin-left: 0px;
+        padding-left: 0px;
+    }
+
+        #FeedList ul li {
+            list-style: none;
+        }
+
+    #FeedList button {
+        background-color: transparent;
+        border-style: none;
+        cursor: pointer;
+        cursor: hand;
+        color: blue;
+    }
