@@ -45,8 +45,8 @@ namespace gdRead.FeedUtils
                 {
                     Url = feedPost.Links.FirstOrDefault() == null ? "" : feedPost.Links.First().Uri.ToString(),
                     Name = feedPost.Title.Text,
-                    Summary = feedPost.Summary.Text,
-
+                    Summary = feedPost.Summary != null ? feedPost.Summary.Text : "",
+                    Content = feedPost.Summary != null ? feedPost.Summary.Text : "",
                     Feed = attachedFeed,
                     PublishDate = feedPost.PublishDate.UtcDateTime,
                     Read = false
@@ -54,7 +54,7 @@ namespace gdRead.FeedUtils
 
                 //get the encoded content or content
                 if (feedPost.Content != null)
-                    post.Content = post.Content.ToString();
+                    post.Content = feedPost.Content.ToString();
                 else
                 {
                     foreach (var ext in feedPost.ElementExtensions)
