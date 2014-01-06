@@ -39,11 +39,16 @@ namespace gdRead.Web.Controllers
         public void Post([FromBody] FeedPostModel feedPost)
         {
             var ctx = new gdReadContext();
+            feedPost.Url = FeedUrlFinder.FindFeedUrl(feedPost.Url);
+            //URL is returned blank if it is not a valid RSS/Atom Feed
+            if (feedPost.Url == "")
+            {
+                return;
+                //TODO Need to handle this to display feedback to the user
+            }
             var feed = ctx.Feeds.FirstOrDefault(x => x.Url == feedPost.Url);
             if (feed == null)
-            {
-                //Find the actual RSS URL 
-                feedPost.Url = FeedUrlFinder.FindFeedUrl(feedPost.Url);                
+            {              
                 feed = new Feed { Url = feedPost.Url};
                 ctx.Feeds.Add(feed);
                 ctx.SaveChanges();
