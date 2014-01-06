@@ -257,6 +257,10 @@
       <Project>{DA4A15BA-929C-4F6F-B51D-C97EB9554D5B}</Project>
       <Name>gdRead.Data</Name>
     </ProjectReference>
+    <ProjectReference Include="..\gdRead.FeedUtils\gdRead.FeedUtils.csproj">
+      <Project>{0BC88BA3-0B2A-4259-985D-031596B98860}</Project>
+      <Name>gdRead.FeedUtils</Name>
+    </ProjectReference>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

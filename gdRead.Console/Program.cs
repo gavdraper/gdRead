@@ -19,7 +19,6 @@ namespace gdRead.Console
                 ctx.Feeds.Add(new Feed()
                 {
                     Title = "Gav Blog",
-                    DisplayName = "Gav Blogs",
                     Url = "http://www.gavindraper.com"
                 });
                 ctx.SaveChanges();

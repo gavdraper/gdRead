@@ -5,6 +5,7 @@ using System.Web;
 using System.Web.Http;
 using gdRead.Data;
 using gdRead.Data.Models;
+using gdRead.FeedUtils;
 using Microsoft.AspNet.Identity;
 
 namespace gdRead.Web.Controllers
@@ -41,17 +42,12 @@ namespace gdRead.Web.Controllers
             var feed = ctx.Feeds.FirstOrDefault(x => x.Url == feedPost.Url);
             if (feed == null)
             {
-
-                //TODO : Get correct feed url
-
-                
-                feed = new Feed { Url = feedPost.Url, Title = feedPost.Url };
+                //Find the actual RSS URL 
+                feedPost.Url = FeedUrlFinder.FindFeedUrl(feedPost.Url);                
+                feed = new Feed { Url = feedPost.Url};
                 ctx.Feeds.Add(feed);
                 ctx.SaveChanges();
-
-
-                //TODO : Fetch Feed Posts
-
+                
                 var subscription = new Subscription
                 {
                     UserId = Guid.Parse(HttpContext.Current.User.Identity.GetUserId()),
@@ -59,6 +55,8 @@ namespace gdRead.Web.Controllers
                 };
                 ctx.Subscriptions.Add(subscription);
                 ctx.SaveChanges();
+
+                Fetcher.FetchFeed(feed.Id);
             }
             else
             {

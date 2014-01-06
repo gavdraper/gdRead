@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "gdRead.FeedUpdater.Worker",
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "gdRead.Web", "gdRead.Web\gdRead.Web.csproj", "{19D1FC93-A0D6-45A4-9931-6ED7EC90E672}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "gdRead.FeedUtils", "gdRead.FeedUtils\gdRead.FeedUtils.csproj", "{0BC88BA3-0B2A-4259-985D-031596B98860}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,10 @@ Global
 		{19D1FC93-A0D6-45A4-9931-6ED7EC90E672}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{19D1FC93-A0D6-45A4-9931-6ED7EC90E672}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{19D1FC93-A0D6-45A4-9931-6ED7EC90E672}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0BC88BA3-0B2A-4259-985D-031596B98860}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0BC88BA3-0B2A-4259-985D-031596B98860}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0BC88BA3-0B2A-4259-985D-031596B98860}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0BC88BA3-0B2A-4259-985D-031596B98860}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
