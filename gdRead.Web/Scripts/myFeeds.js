@@ -1,7 +1,7 @@
 ﻿var gdRead = gdRead || {};
 gdRead.app = angular.module("gdReadModule", ['ngSanitize', 'ui.bootstrap']);
 
-gdRead.app.factory("feedService", function ($http) {
+gdRead.app.factory("feedService", function ($http, $rootScope, $timeout) {
     return {
         loadFeeds: function () {
             return $http.get("/Api/Feeds");
@@ -17,15 +17,31 @@ gdRead.app.factory("feedService", function ($http) {
         },
         formatDate: function (longDate) {
             return longDate.replace("T", " ");
+        },
+        focus: function (name) {
+            $timeout(function () {
+                $rootScope.$broadcast('focusOn', name);
+            });
         }
     };
 });
 
-gdRead.app.controller("myFeedCtrl", function ($scope, feedService, $modal) {
+gdRead.app.directive('focusOn', function () {
+    return function (scope, elem, attr) {
+        scope.$on('focusOn', function (e, name) {            
+            if (name === attr.focusOn) {
+                elem[0].focus();                 
+            }
+        });
+    };
+});
 
+gdRead.app.controller("myFeedCtrl", function ($scope, feedService, $modal, $timeout) {
+    $scope.feedsLoading = true;
     var feedRequest = feedService.loadFeeds();
     feedRequest.success(function (feeds) {
         $scope.feeds = feeds;
+        $scope.feedsLoading = false;
     });
 
     $scope.selectAllFeeds = function () {
@@ -56,6 +72,8 @@ gdRead.app.controller("myFeedCtrl", function ($scope, feedService, $modal) {
             controller: addFeedModalCtrl
         });
 
+        $timeout(function () { feedService.focus("addFeedFocus"); }, 0);
+        
         modalInstance.result.then(function () {
             feedRequest = feedService.loadFeeds();
             feedRequest.success(function (feeds) {
@@ -79,7 +97,7 @@ var addFeedModalCtrl = function ($scope, $modalInstance, feedService) {
             $modalInstance.close();
         });
 
-        
+
     };
 
     $scope.cancel = function () {

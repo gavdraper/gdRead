@@ -11,17 +11,20 @@
     </div>
 
     <div class="row">
-        <div class="col-md-3 FeedList">
+        <div class="col-md-2">
             <button ng-click="openAddFeedModal()">Add Feed</button>
             <!--<button ng-click="selectAllFeeds()">All Feeds</button>-->
-            <ul>
-                <li ng-repeat="feed in feeds"><button ng-click="feedSelected(feed)">{{feed.Title}}</button></li>
-            </ul>
+            <div id="FeedList">
+                <div ng-show="feedsLoading">Loading Feeds...</div>
+                <ul>
+                    <li ng-repeat="feed in feeds"><button ng-click="feedSelected(feed)">{{feed.Title}}</button></li>
+                </ul>
+            </div>
         </div>
-        <div class="col-md-9">
+        <div class="col-md-10">
             <h2>{{currentFeed.title}}</h2>
             <div ng-repeat="post in currentFeed.Posts">
-                <div class="PostTitle" ng-click="selectPost(post)">{{post.PublishDate}} - <span ng-class="{UnReadPost:!post.Read}">{{post.Name}}</span></div>
+                <div class="PostTitle" ng-click="selectPost(post)">{{post.Feed.Title}} <span ng-class="{UnReadPost:!post.Read}">{{post.Name}}</span> {{post.PublishDate}}</div>
                 <div ng-hide="!post.Selected" ng-bind-html="post.Content"></div>
             </div>
         </div>
@@ -32,7 +35,7 @@
             <h3>Add Feed</h3>
         </div>
         <div class="modal-body">
-            Feed URL :  <input type="text" ng-model="modelValues.url" />
+            Feed URL :  <input type="text" ng-model="modelValues.url" id="addFeedUrl" focus-on="addFeedFocus" />
             <div ng-show="feedLoading">Fetching Feed...</div>
         </div>
         <div class="modal-footer">
