@@ -13,7 +13,6 @@ gdRead.app.factory("feedService", function ($http) {
             return $http.get("/Api/Posts/");
         },
         addFeed: function (url) {
-            console.log(url);
             return $http.post("/Api/Feeds/", { Url: url });
         },
         formatDate: function (longDate) {
@@ -52,9 +51,16 @@ gdRead.app.controller("myFeedCtrl", function ($scope, feedService, $modal) {
     };
 
     $scope.openAddFeedModal = function () {
-        $modal.open({
+        var modalInstance = $modal.open({
             templateUrl: 'addFeedWindow.html',
             controller: addFeedModalCtrl
+        });
+
+        modalInstance.result.then(function () {
+            feedRequest = feedService.loadFeeds();
+            feedRequest.success(function (feeds) {
+                $scope.feeds = feeds;
+            });
         });
     };
 
@@ -63,11 +69,17 @@ gdRead.app.controller("myFeedCtrl", function ($scope, feedService, $modal) {
 
 
 var addFeedModalCtrl = function ($scope, $modalInstance, feedService) {
-
+    $scope.feedLoading = false;
     $scope.modelValues = {};
     $scope.ok = function () {
-        feedService.addFeed($scope.modelValues.url);
-        $modalInstance.close();
+        $scope.feedLoading = true;
+        var apiReturn = feedService.addFeed($scope.modelValues.url);
+        apiReturn.success(function () {
+            $scope.feedLoading = false;
+            $modalInstance.close();
+        });
+
+        
     };
 
     $scope.cancel = function () {
