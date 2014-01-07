@@ -3,28 +3,46 @@
 <div class="container" ng-app="gdReadModule" ng-controller="myFeedCtrl">
     <div class="row">
         <div class="col-md-2">
-        <!--    <select>
-                <option value="Un-Read">Un-Read</option>
-                <option value="UnRead">All</option>
-            </select>-->
+            <!--    <select>
+                    <option value="Un-Read">Un-Read</option>
+                    <option value="UnRead">All</option>
+                </select>-->
         </div>
     </div>
 
     <div class="row">
         <div class="col-md-2">
-            <button ng-click="openAddFeedModal()">Add Feed</button>
+            <button ng-click="openAddFeedModal()" class="linkButton">+Add Feed</button>
             <!--<button ng-click="selectAllFeeds()">All Feeds</button>-->
-            <div id="FeedList">
+            <div id="FeedList" class="visible-sm visible-xs">
+                <select ng-change="feedSelected()" ng-model="comboSelectedFeed" ng-options="feed.Title for feed in feeds">
+                    <option value="default" disabled="disabled">Feeds</option>
+                    <!--<option ng-repeat="feed in feeds" value="{{feed}}">{{feed.Title}}</option>-->
+                </select>
+            </div>
+            <div id="FeedList" class="visible-md visible-lg">
                 <div ng-show="feedsLoading">Loading Feeds...</div>
+                Feeds
+                <hr />
                 <ul>
-                    <li ng-repeat="feed in feeds"><button ng-click="feedSelected(feed)">{{feed.Title}}</button></li>
+                    <li ng-repeat="feed in feeds"><button ng-click="feedSelected(feed)" ng-class="{UnReadPost:feed.UnreadCount>0}">{{feed.Title}} <span ng-show="feed.UnreadCount>0">({{feed.UnreadCount}})</span></button></li>
                 </ul>
+                Starred<br />
+
+                Folders
+                <hr />
             </div>
         </div>
         <div class="col-md-10">
             <h2>{{currentFeed.title}}</h2>
             <div ng-repeat="post in currentFeed.Posts">
-                <div class="PostTitle" ng-click="selectPost(post)">{{post.Feed.Title}} <span ng-class="{UnReadPost:!post.Read}">{{post.Name}}</span> {{post.PublishDate}}</div>
+                <div class="PostTitle" ng-click="selectPost(post)">
+                    <span ng-show="post.Selected">&#9660;</span>
+                    <span ng-hide="post.Selected">&#9658;</span>
+                    <span ng-show="post.Starred">&#9733;</span>
+                    <span ng-hide="post.Starred">&#9734;</span>
+                    {{post.Feed.Title}} <span ng-class="{UnReadPost:!post.Read}">{{post.Name}}</span> <span class="visible-md">{{post.PublishDate}}</span>
+                </div>
                 <div ng-hide="!post.Selected" ng-bind-html="post.Content"></div>
             </div>
         </div>
