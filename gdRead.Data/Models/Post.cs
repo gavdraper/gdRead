@@ -1,4 +1,5 @@
 ﻿using System;
+using DapperExtensions.Mapper;
 
 namespace gdRead.Data.Models
 {
@@ -17,6 +18,16 @@ namespace gdRead.Data.Models
         public Post()
         {
             DateFetched = DateTime.Now;
+        }
+    }
+
+    public class PostMapper : ClassMapper<Post>
+    {
+        public PostMapper()
+        {
+            Table("Post");
+            Map(m => m.Read).Ignore();
+            AutoMap();
         }
     }
 }
