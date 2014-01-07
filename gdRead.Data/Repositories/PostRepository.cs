@@ -28,6 +28,29 @@ namespace gdRead.Data.Repositories
             }
         }
 
+        public void SetPostAsRead(int postId, Guid userId)
+        {
+            using (var con = new SqlConnection(_conStr))
+            {
+                con.Open();
+                con.Query<DateTime?>(
+                    @"
+                        DECLARE @FeedId INT 
+                        SELECT @FeedId = FeedId FROM Post WHERE Id = @postId
+                        DECLARE @SubscriptionId INT
+                        SELECT @SubscriptionId = Id FROM Subscription WHERE UserId = @UserId AND FeedId = @FeedId
+                        IF NOT EXISTS(SELECT Id FROM SubscriptionPostRead WHERE SubscriptionId = @SubscriptionId AND PostId = @PostId)
+	                        BEGIN
+		                    INSERT INTO SubscriptionPostRead(SubScriptionId,PostId)
+		                    VALUES(@SubscriptionId,@PostId)
+	                        END
+                    "
+                    ,
+                    new {PostId = postId, UserId = userId});
+                con.Close();
+            }
+        }
+
         public Post AddPost(Post post)
         {
             using (var con = new SqlConnection(_conStr))
@@ -39,12 +62,23 @@ namespace gdRead.Data.Repositories
             }
         }
 
-        public IEnumerable<Post> GetPostsFromFeed(int feedId)
+        public IEnumerable<Post> GetPostsFromFeed(int feedId, Guid userId)
         {
             using (var con = new SqlConnection(_conStr))
             {
                 con.Open();
-                var posts = con.Query<Post>("SELECT * FROM Post WHERE FeedId = @FeedId", new {FeedId = feedId});
+                var posts = con.Query<Post>(@"
+                    SELECT 
+	                    Post.*
+	                    , CASE WHEN SubscriptionPostRead.Id IS NOT NULL THEN 1 ELSE 0 END AS [Read]
+                    FROM 
+	                    Post
+                        INNER JOIN Subscription ON Subscription.FeedId = Post.FeedId 
+	                    LEFT JOIN SubscriptionPostRead ON SubscriptionPostRead.SubscriptionId = Subscription.Id AND SubscriptionPostRead.PostId = Post.Id
+                    WHERE 
+	                    post.FeedId = @FeedId
+	                    AND Subscription.UserId = @UserId
+                    ", new {FeedId = feedId, UserId = userId});
                 con.Close();
                 return posts;
             }
