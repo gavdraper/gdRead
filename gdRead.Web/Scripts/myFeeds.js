@@ -15,6 +15,9 @@ gdRead.app.factory("feedService", function ($http, $rootScope, $timeout) {
         addFeed: function (url) {
             return $http.post("/Api/Feeds/", { Url: url });
         },
+        markPostAsRead:function(post) {
+            return $http.post("/Api/PostRead/", post);
+        },
         formatDate: function (longDate) {
             return longDate.replace("T", " ");
         },
@@ -49,6 +52,7 @@ gdRead.app.controller("myFeedCtrl", function ($scope, feedService, $modal, $time
     };
 
     $scope.feedSelected = function (feed) {
+        if (!feed) feed = $scope.comboSelectedFeed;        
         $scope.currentFeed = { title: feed.Title };
         var postFeedRequest = feedService.loadPosts(feed.Id);
         postFeedRequest.success(function (posts) {
@@ -61,6 +65,20 @@ gdRead.app.controller("myFeedCtrl", function ($scope, feedService, $modal, $time
     $scope.selectPost = function (post) {
         if (!post.Selected) {
             post.Selected = true;
+            if (!post.Read) {
+                var result = feedService.markPostAsRead(post);
+                
+                result.success(function() {
+                    post.Read = true; 
+                    for (var i = 0; i < $scope.feeds.length; i++) {
+                        if ($scope.feeds[i].Id == post.FeedId) {
+                            $scope.feeds[i].UnreadCount -= 1;
+                        }
+                    }
+
+                });
+
+            }
         } else {
             post.Selected = false;
         }
