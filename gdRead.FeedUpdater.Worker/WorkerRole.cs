@@ -21,7 +21,7 @@ namespace gdRead.FeedUpdater.Worker
             Trace.TraceInformation("gdRead.FeedUpdater.Worker entry point called");
             while (true)
             {
-                Fetcher.FetchAllFeeds();
+             //   Fetcher.FetchAllFeeds();
                 Thread.Sleep(14400000);
             }
         }

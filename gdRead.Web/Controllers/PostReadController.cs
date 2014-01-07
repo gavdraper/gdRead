@@ -10,7 +10,7 @@ namespace gdRead.Web.Controllers
 {
 	public class PostReadController : ApiController
 	{
-		[Authorize]
+		/*[Authorize]
 		public void Post([FromBody] Post post)
 		{
 			var ctx = new gdReadContext();
@@ -24,6 +24,6 @@ namespace gdRead.Web.Controllers
 			};
 			ctx.SubscriptionsSubscriptionReadPost.Add(subRead);
 			ctx.SaveChanges();
-		}
+		}*/
 	}
 }

@@ -1,40 +1,35 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Web;
 using System.Web.Http;
-using gdRead.Data;
+using System.Configuration;
 using gdRead.Data.Models;
-using gdRead.FeedUtils;
+using gdRead.Data.Repositories;
 using Microsoft.AspNet.Identity;
 
 namespace gdRead.Web.Controllers
 {
     public class FeedsController : ApiController
     {
+        private readonly string _conStr = ConfigurationManager.ConnectionStrings["gdRead.Data.gdReadContext"].ConnectionString;
+
+        //Get all sub'ed feeds
         [Authorize]
         public IEnumerable<Feed> Get()
         {
 
             var userId = Guid.Parse(HttpContext.Current.User.Identity.GetUserId());
-            var ctx = new gdReadContext();
-            var feeds =
-                (
-                    from subscription in ctx.Subscriptions
-                    join feed in ctx.Feeds on subscription.Feed.Id equals feed.Id into joinedFeeds
-                    from jf in joinedFeeds.DefaultIfEmpty()
-                    where subscription.UserId == userId
-                    select jf
-                    );
-
-            return feeds;
+            var feedRepository = new FeedRepository(_conStr);
+            feedRepository.GetFeedById(57);
+            return feedRepository.GetSubscribedFeeds(userId);
         }
-
+        /*
         public class FeedPostModel
         {
             public string Url { get; set; }
         }
 
+        //Add/Sub a feed
         [Authorize]
         public void Post([FromBody] FeedPostModel feedPost)
         {
@@ -79,6 +74,6 @@ namespace gdRead.Web.Controllers
             }
             
 
-        }
+        }*/
     }
 }

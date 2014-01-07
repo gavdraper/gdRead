@@ -9,11 +9,11 @@ namespace gdRead.Web.Controllers
     public class PostsController : ApiController
     {
         // GET api/<controller>
-        public IEnumerable<Post> Get(int id)
+        /*public IEnumerable<Post> Get(int id)
         {
             var ctx = new gdReadContext();
             return ctx.Posts.Where(x => x.Feed.Id == id);
-        }
+        }*/
 
     }
 }

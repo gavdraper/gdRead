@@ -12,7 +12,7 @@ namespace gdRead.Console
 {
     class Program
     {
-        static gdReadContext ctx = new gdReadContext();
+       // static gdReadContext ctx = new gdReadContext();
 
         static void Main(string[] args)
         {

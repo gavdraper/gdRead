@@ -5,7 +5,7 @@ namespace gdRead.Data.Models
     public class Post
     {
         public int Id { get; set; }
-        public virtual Feed Feed { get; set; }
+        public int FeedId { get; set; }
         public string Name { get; set; }
         public string  Url { get; set; }
         public string Summary { get; set; }

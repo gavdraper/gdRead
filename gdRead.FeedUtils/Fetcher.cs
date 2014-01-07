@@ -9,7 +9,7 @@ using gdRead.Data.Models;
 namespace gdRead.FeedUtils
 {
     public class Fetcher
-    {
+    {/*
         private static DateTime getLastPublishDate(Feed subscription)
         {
             var ctx = new gdReadContext();
@@ -80,6 +80,6 @@ namespace gdRead.FeedUtils
             {
               FetchFeed(feed.Id);
             }
-        }
+        }*/
     }
 }

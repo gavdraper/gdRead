@@ -7,6 +7,6 @@ namespace gdRead.Data.Models
     {
         public int Id { get; set; }
         public Guid UserId { get; set; }
-        public virtual Feed Feed { get; set; }
+        public int FeedId { get; set; }
     }
 }
