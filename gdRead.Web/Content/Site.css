@@ -59,8 +59,20 @@ input[type="checkbox"].input-validation-error {
     border-color: #444444;
 }
 
+.linkButton {
+    background-color: transparent;
+    border-style: none;
+    cursor: pointer;
+    cursor: hand;
+    color: blue;
+    text-decoration: underline;
+    text-align: left;
+    height: 18px;
+    overflow: hidden;
+}
+
 #FeedList {
-    font-size: 8pt;
+    font-size: 10pt;
 }
 
     #FeedList ul {
@@ -77,5 +89,12 @@ input[type="checkbox"].input-validation-error {
         border-style: none;
         cursor: pointer;
         cursor: hand;
-        color: blue;
+        text-align: left;
+        height: 18px;
+        overflow: hidden;
+    }
+
+    #FeedList hr {
+        margin-top: 0px;
+        margin-bottom: 0px;
     }
