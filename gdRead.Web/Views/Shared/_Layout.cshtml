@@ -33,7 +33,7 @@
         @RenderBody()
         <hr />
         <footer>
-            <p>&copy; @DateTime.Now.Year - gdRead</p>
+            <p>&copy; @DateTime.Now.Year - gdRead @typeof(gdRead.Web.MvcApplication).Assembly.GetName().Version</p>
         </footer>
     </div>
 
