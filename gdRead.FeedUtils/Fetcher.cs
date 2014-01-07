@@ -3,40 +3,49 @@ using System.Linq;
 using System.ServiceModel.Syndication;
 using System.Xml;
 using System.Xml.Linq;
-using gdRead.Data;
 using gdRead.Data.Models;
+using gdRead.Data.Repositories;
 
 namespace gdRead.FeedUtils
 {
     public class Fetcher
-    {/*
-        private static DateTime getLastPublishDate(Feed subscription)
+    {
+
+        private readonly string _conStr;
+        public Fetcher(string conStr)
         {
-            var ctx = new gdReadContext();
-            var lastPost = (from post in ctx.Posts
-                            where post.Feed.Id == subscription.Id
-                            orderby post.PublishDate descending
-                            select post).FirstOrDefault();
-            return lastPost == null ? DateTime.MinValue : lastPost.PublishDate;
+            _conStr = conStr;
+        }
+
+        private DateTime getLastPublishDate(Feed feed)
+        {
+            var postRepository = new PostRepository(_conStr);
+            return postRepository.GetLastPostDateInFeed(feed.Id);
         }
 
 
-        public static void FetchFeed(int feedId)
+        public void FetchFeed(int feedId)
         {
-            var ctx = new gdReadContext();
-            var attachedFeed = ctx.Feeds.FirstOrDefault(x => x.Id == feedId);
+            var feedRepository = new FeedRepository(_conStr);
+            var postRepository = new PostRepository(_conStr);
+            var feed = feedRepository.GetFeedById(feedId);
+ 
             SyndicationFeed rssFeed;
             using (
-                var feedXml = XmlReader.Create(FeedUrlFinder.FindFeedUrl(attachedFeed.Url),
+                var feedXml = XmlReader.Create(FeedUrlFinder.FindFeedUrl(feed.Url),
                     new XmlReaderSettings { DtdProcessing = DtdProcessing.Parse }))
             {
                 rssFeed = SyndicationFeed.Load(feedXml);
                 feedXml.Close();
             }
 
-            attachedFeed.Title = rssFeed.Title != null ? rssFeed.Title.Text : "No Title";
+            if (string.IsNullOrEmpty(feed.Title))
+            {
+                feed.Title = rssFeed.Title != null ? rssFeed.Title.Text : "No Title";
+                feedRepository.UpdateFeed(feed);
+            }
 
-            var lastPublishDate = getLastPublishDate(attachedFeed);
+            var lastPublishDate = getLastPublishDate(feed);
 
             foreach (var feedPost in rssFeed.Items.Where(x => x.PublishDate.UtcDateTime > lastPublishDate))
             {
@@ -47,7 +56,7 @@ namespace gdRead.FeedUtils
                     Name = feedPost.Title.Text,
                     Summary = feedPost.Summary != null ? feedPost.Summary.Text : "",
                     Content = feedPost.Summary != null ? feedPost.Summary.Text : "",
-                    Feed = attachedFeed,
+                    FeedId = feed.Id,
                     PublishDate = feedPost.PublishDate.UtcDateTime,
                     Read = false
                 };
@@ -67,19 +76,18 @@ namespace gdRead.FeedUtils
                         }
                     }
                 }
-
-                ctx.Posts.Add(post);
-                ctx.SaveChanges();
+                postRepository.AddPost(post);
             }
         }
 
-        public static void FetchAllFeeds()
+        public void FetchAllFeeds()
         {
-            var ctx = new gdReadContext();
-            foreach (var feed in ctx.Feeds.ToList())
+            var feedRepository = new FeedRepository(_conStr);
+            var feeds = feedRepository.GetAllFeeds();
+            foreach (var feed in feeds)
             {
               FetchFeed(feed.Id);
             }
-        }*/
+        }
     }
 }

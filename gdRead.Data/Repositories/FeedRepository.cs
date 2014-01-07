@@ -38,6 +38,17 @@ namespace gdRead.Data.Repositories
             }            
         }
 
+        public Feed UpdateFeed(Feed feed)
+        {
+            using (var con = new SqlConnection(_conStr))
+            {
+                con.Open();                                    
+                con.Update(feed);
+                con.Close();
+                return feed;
+            }
+        }
+
         public Feed GetFeedById(int id)
         {
             using (var con = new SqlConnection(_conStr))
@@ -57,11 +68,22 @@ namespace gdRead.Data.Repositories
                 var feed = con.Query<Feed>(@"
                     SELECT Feed.* 
                     FROM Feed 
-                    INNER JOIN Subscriptions ON Subscriptions.FeedId = Feed.Id
-                    WHERE Subscriptions.UserId = @UserId", new { UserId = userId });
+                    INNER JOIN Subscription ON Subscription.FeedId = Feed.Id
+                    WHERE Subscription.UserId = @UserId", new { UserId = userId });
                 con.Close();
                 return feed;
             }         
+        }
+
+        public IEnumerable<Feed> GetAllFeeds()
+        {
+            using (var con = new SqlConnection(_conStr))
+            {
+                con.Open();
+                var feed = con.Query<Feed>(@"SELECT * FROM Feed");
+                con.Close();
+                return feed;
+            }
         }
 
         public Subscription SubscribeToFeed(int feedId, Guid userId)

@@ -1,14 +1,6 @@
-using System;
 using System.Diagnostics;
-using System.Linq;
 using System.Net;
-using System.ServiceModel.Syndication;
 using System.Threading;
-using System.Xml;
-using System.Xml.Linq;
-using gdRead.Data;
-using gdRead.Data.Models;
-using gdRead.FeedUtils;
 using Microsoft.WindowsAzure.ServiceRuntime;
 
 namespace gdRead.FeedUpdater.Worker
@@ -21,7 +13,7 @@ namespace gdRead.FeedUpdater.Worker
             Trace.TraceInformation("gdRead.FeedUpdater.Worker entry point called");
             while (true)
             {
-             //   Fetcher.FetchAllFeeds();
+            //   Fetcher.FetchAllFeeds();
                 Thread.Sleep(14400000);
             }
         }
