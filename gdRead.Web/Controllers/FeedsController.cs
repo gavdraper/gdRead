@@ -22,7 +22,7 @@ namespace gdRead.Web.Controllers
             var userId = Guid.Parse(HttpContext.Current.User.Identity.GetUserId());
             var feedRepository = new FeedRepository(_conStr);
             feedRepository.GetFeedById(57);
-            return feedRepository.GetSubscribedFeeds(userId);
+            return feedRepository.GetSubscribedFeedsWithUnreadCount(userId);
         }
         
         public class FeedPostModel

@@ -5,6 +5,7 @@ using System.Linq;
 using DapperExtensions;
 using gdRead.Data.Models;
 using Dapper;
+using gdRead.Data.ViewModels;
 
 namespace gdRead.Data.Repositories
 {
@@ -60,16 +61,26 @@ namespace gdRead.Data.Repositories
             }            
         }
 
-        public IEnumerable<Feed> GetSubscribedFeeds(Guid userId)
+        public IEnumerable<Feed> GetSubscribedFeedsWithUnreadCount(Guid userId)
         {
             using (var con = new SqlConnection(_conStr))
             {
                 con.Open();
-                var feed = con.Query<Feed>(@"
-                    SELECT Feed.* 
-                    FROM Feed 
-                    INNER JOIN Subscription ON Subscription.FeedId = Feed.Id
-                    WHERE Subscription.UserId = @UserId", new { UserId = userId });
+                var feed = con.Query<FeedViewModel>(@"                    
+                SELECT 
+	                Feed.* ,
+	                SUM(CASE WHEN sr.Id IS NULL THEN 1 ELSE 0 END) As UnreadCount
+                FROM 
+	                Feed 
+	                INNER JOIN Subscription ON Subscription.FeedId = Feed.Id
+	                INNER JOIN Post ON Post.FeedId = Subscription.FeedId
+	                LEFT JOIN SubscriptionPostRead sr ON sr.SubscriptionId = Subscription.Id AND sr.PostId = post.Id
+                WHERE Subscription.UserId = @UserId
+                GROUP BY 
+	                Feed.Id,
+	                Feed.Title,
+	                Feed.Url
+                ", new { UserId = userId });
                 con.Close();
                 return feed;
             }         

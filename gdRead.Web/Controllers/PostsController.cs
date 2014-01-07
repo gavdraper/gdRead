@@ -1,11 +1,14 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Web;
 using System.Web.Http;
 using gdRead.Data;
 using gdRead.Data.Models;
 using gdRead.Data.Repositories;
+using Microsoft.AspNet.Identity;
 
 namespace gdRead.Web.Controllers
 {     
@@ -16,7 +19,8 @@ namespace gdRead.Web.Controllers
        public IEnumerable<Post> Get(int id)
        {
            var postRepository = new PostRepository(_conStr);
-           return postRepository.GetPostsFromFeed(id);
+           var userId = Guid.Parse(HttpContext.Current.User.Identity.GetUserId());
+           return postRepository.GetPostsFromFeed(id,userId);
        }
 
     }
