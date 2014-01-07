@@ -46,6 +46,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ViewModels\FeedViewModel.cs" />
     <Compile Include="Models\Post.cs" />
     <Compile Include="Models\Feed.cs" />
     <Compile Include="Models\Subscription.cs" />
