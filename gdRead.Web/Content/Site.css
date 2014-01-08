@@ -57,9 +57,10 @@ input[type="checkbox"].input-validation-error {
     font-weight: bold;
 }
 
-.PostTitle {
+.PostHeader {
     cursor: pointer;
     cursor: hand;
+    padding-right: 3px;
 }
 
 .linkButton {
@@ -140,4 +141,31 @@ input[type="checkbox"].input-validation-error {
     padding-top: 3px;
     padding-bottom: 3px;
     padding-right: 3px;
+}
+
+
+
+.PostTitle {
+    float: left;
+    width: 80%;
+    height: 19px;
+    overflow: hidden;
+    text-align: left;
+}
+
+
+
+.PostDate {
+    float: left;
+    width: 20%;
+    height: 18px;
+    overflow: hidden;
+    text-align: right;
+}
+
+.Clear {
+    clear: both;
+    visibility: hidden;
+    height: 0px;
+    width: 0px;
 }
