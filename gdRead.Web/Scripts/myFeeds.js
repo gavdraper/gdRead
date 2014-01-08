@@ -15,7 +15,7 @@ gdRead.app.factory("feedService", function ($http, $rootScope, $timeout) {
         addFeed: function (url) {
             return $http.post("/Api/Feeds/", { Url: url });
         },
-        markPostAsRead:function(post) {
+        markPostAsRead: function (post) {
             return $http.post("/Api/PostRead/", post);
         },
         formatDate: function (longDate) {
@@ -31,9 +31,9 @@ gdRead.app.factory("feedService", function ($http, $rootScope, $timeout) {
 
 gdRead.app.directive('focusOn', function () {
     return function (scope, elem, attr) {
-        scope.$on('focusOn', function (e, name) {            
+        scope.$on('focusOn', function (e, name) {
             if (name === attr.focusOn) {
-                elem[0].focus();                 
+                elem[0].focus();
             }
         });
     };
@@ -53,7 +53,9 @@ gdRead.app.controller("myFeedCtrl", function ($scope, feedService, $modal, $time
 
     $scope.feedSelected = function (feed) {
         if (!feed) feed = $scope.comboSelectedFeed;
-        $scope.currentFeed.selected = false;
+        for (var i = 0; i < $scope.feeds.length; i++) {
+            $scope.feeds[i].selected = false;
+        }
         $scope.currentFeed = { title: feed.Title };
         feed.selected = true;
         var postFeedRequest = feedService.loadPosts(feed.Id);
@@ -69,9 +71,9 @@ gdRead.app.controller("myFeedCtrl", function ($scope, feedService, $modal, $time
             post.Selected = true;
             if (!post.Read) {
                 var result = feedService.markPostAsRead(post);
-                
-                result.success(function() {
-                    post.Read = true; 
+
+                result.success(function () {
+                    post.Read = true;
                     for (var i = 0; i < $scope.feeds.length; i++) {
                         if ($scope.feeds[i].Id == post.FeedId) {
                             $scope.feeds[i].UnreadCount -= 1;
@@ -93,7 +95,7 @@ gdRead.app.controller("myFeedCtrl", function ($scope, feedService, $modal, $time
         });
 
         $timeout(function () { feedService.focus("addFeedFocus"); }, 0);
-        
+
         modalInstance.result.then(function () {
             feedRequest = feedService.loadFeeds();
             feedRequest.success(function (feeds) {
