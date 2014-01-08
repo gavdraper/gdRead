@@ -42,8 +42,14 @@ input[type="checkbox"].input-validation-error {
 }
 
 
-
-
+/* 
+  Allow angular.js to be loaded in body, hiding cloaked elements until 
+  templates compile.  The !important is important given that there may be 
+  other selectors that are more specific or come later and might alter display.  
+ */
+[ng\:cloak], [ng-cloak], [data-ng-cloak], [x-ng-cloak], .ng-cloak, .x-ng-cloak {
+    display: none !important;
+}
 
 
 /*MyFeed Page*/
@@ -52,11 +58,8 @@ input[type="checkbox"].input-validation-error {
 }
 
 .PostTitle {
-    border-bottom-style: solid;
     cursor: pointer;
     cursor: hand;
-    border-width: 1px;
-    border-color: #444444;
 }
 
 .linkButton {
@@ -92,9 +95,49 @@ input[type="checkbox"].input-validation-error {
         text-align: left;
         height: 18px;
         overflow: hidden;
+        width: 100%;
     }
+
+        #FeedList button.SelectedFeed {
+            background-color: #C2CFF1;
+        }
+
+
 
     #FeedList hr {
         margin-top: 0px;
         margin-bottom: 0px;
     }
+
+#FeedReadingPane .Header {
+    background-color: #C2CFF1;
+    margin-bottom: 0px;
+}
+
+    #FeedReadingPane .Header h2 {
+        background-color: #C2CFF1;
+        margin-bottom: 0px;
+        margin-top: 0px;
+    }
+
+
+.PostContainer {
+    background-color: #EBEFF9;
+    margin-top: 0px;
+}
+
+.TableRow {
+    background-color: #ffffff;
+}
+
+.TableRowAlternating {
+    background-color: #F3F5FC;
+}
+
+
+#feedToolBar {
+    width: 100%;
+    padding-top: 3px;
+    padding-bottom: 3px;
+    padding-right: 3px;
+}

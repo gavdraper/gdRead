@@ -1,6 +1,6 @@
 ﻿<h2>MyFeeds</h2>
 
-<div class="container" ng-app="gdReadModule" ng-controller="myFeedCtrl">
+<div class="container" ng-app="gdReadModule" ng-controller="myFeedCtrl" ng-cloak class="ng-cloak">
     <div class="row">
         <div class="col-md-2">
             <!--    <select>
@@ -25,7 +25,7 @@
                 Feeds
                 <hr />
                 <ul>
-                    <li ng-repeat="feed in feeds"><button ng-click="feedSelected(feed)" ng-class="{UnReadPost:feed.UnreadCount>0}">{{feed.Title}} <span ng-show="feed.UnreadCount>0">({{feed.UnreadCount}})</span></button></li>
+                    <li ng-repeat="feed in feeds"><button ng-click="feedSelected(feed)" ng-class="{SelectedFeed:feed.selected}" ng-class="{UnReadPost:feed.UnreadCount>0}">{{feed.Title}} <span ng-show="feed.UnreadCount>0">({{feed.UnreadCount}})</span></button></li>
                 </ul>
                 Starred<br />
 
@@ -33,17 +33,26 @@
                 <hr />
             </div>
         </div>
-        <div class="col-md-10">
-            <h2>{{currentFeed.title}}</h2>
-            <div ng-repeat="post in currentFeed.Posts">
-                <div class="PostTitle" ng-click="selectPost(post)">
-                    <span ng-show="post.Selected">&#9660;</span>
-                    <span ng-hide="post.Selected">&#9658;</span>
-                    <span ng-show="post.Starred">&#9733;</span>
-                    <span ng-hide="post.Starred">&#9734;</span>
-                    {{post.Feed.Title}} <span ng-class="{UnReadPost:!post.Read}">{{post.Name}}</span> <span class="visible-md">{{post.PublishDate}}</span>
+        <div class="col-md-10" id="FeedReadingPane">
+            <div class="Header"><h2>{{currentFeed.title}}</h2></div>
+            <div class="PostContainer">
+                <div ng-show="currentFeed.Posts" id="feedToolBar">
+                    <div class="text-right">
+                        <button>Unsubscribe</button>
+                        <button>Refresh</button>
+                        <button>Mark All As Read</button>
+                    </div>
                 </div>
-                <div ng-hide="!post.Selected" ng-bind-html="post.Content"></div>
+                <div ng-repeat="post in currentFeed.Posts">
+                    <div ng-class-odd="'TableRow'" ng-class-even="'AlternatingTableRow'" class="PostTitle" ng-click="selectPost(post)" >
+                        <span ng-show="post.Selected">&#9660;</span>
+                        <span ng-hide="post.Selected">&#9658;</span>
+                        <span ng-show="post.Starred">&#9733;</span>
+                        <span ng-hide="post.Starred">&#9734;</span>
+                        {{post.Feed.Title}} <span ng-class="{UnReadPost:!post.Read}">{{post.Name}}</span> <span class="visible-md">{{post.PublishDate}}</span>
+                    </div>
+                    <div ng-hide="!post.Selected" ng-bind-html="post.Content" class="TableRow"></div>
+                </div>
             </div>
         </div>
     </div>

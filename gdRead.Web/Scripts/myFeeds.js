@@ -52,8 +52,10 @@ gdRead.app.controller("myFeedCtrl", function ($scope, feedService, $modal, $time
     };
 
     $scope.feedSelected = function (feed) {
-        if (!feed) feed = $scope.comboSelectedFeed;        
+        if (!feed) feed = $scope.comboSelectedFeed;
+        $scope.currentFeed.selected = false;
         $scope.currentFeed = { title: feed.Title };
+        feed.selected = true;
         var postFeedRequest = feedService.loadPosts(feed.Id);
         postFeedRequest.success(function (posts) {
             for (var i = 0; i < posts.length; i++)
