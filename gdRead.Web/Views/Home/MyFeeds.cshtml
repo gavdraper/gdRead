@@ -25,7 +25,13 @@
                 Feeds
                 <hr />
                 <ul>
-                    <li ng-repeat="feed in feeds"><button ng-click="feedSelected(feed)" ng-class="{SelectedFeed:feed.selected}" ng-class="{UnReadPost:feed.UnreadCount>0}">{{feed.Title}} <span ng-show="feed.UnreadCount>0">({{feed.UnreadCount}})</span></button></li>
+                    <li ng-repeat="feed in feeds" class="FeedItem">
+                        <button ng-click="feedSelected(feed)" ng-class="{SelectedFeed:feed.selected}" ng-class="{UnReadPost:feed.UnreadCount>0}">
+                            <div class="FeedTitle" ng-class="{UnReadPost:feed.UnreadCount>0}">{{feed.Title}}</div>
+                            <div class="FeedCount"><span ng-show="feed.UnreadCount>0">({{feed.UnreadCount}})</span></div>
+                            <div class="Clear">&nbsp;</div>
+                        </button>
+                    </li>
                 </ul>
                 Starred<br />
 
@@ -52,7 +58,7 @@
                             <span ng-hide="post.Starred">&#9734;</span>
                             <span ng-class="{UnReadPost:!post.Read}">{{post.Name}}</span>
                         </div>
-                        
+
                         <div class="PostDate"><span class="visible-md visible-lg">{{post.PublishDate}}</span></div>
                         <div class="Clear">&nbsp;</div>
 
