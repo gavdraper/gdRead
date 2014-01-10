@@ -18,6 +18,9 @@ gdRead.app.factory("feedService", function ($http, $rootScope, $timeout) {
         markPostAsRead: function (post) {
             return $http.post("/Api/PostRead/", post);
         },
+        markFeedAsRead: function (feed) {
+            return $http.post("/Api/FeedRead/", feed);
+        },
         formatDate: function (longDate) {
             return longDate.replace("T", " ");
         },
@@ -48,21 +51,34 @@ gdRead.app.controller("myFeedCtrl", function ($scope, feedService, $modal, $time
     });
 
     $scope.selectAllFeeds = function () {
-        $scope.currentFeed = { title: "All Feeds" };
+        $scope.currentFeed = { Title: "All Feeds" };
     };
 
     $scope.feedSelected = function (feed) {
+        $scope.currentPosts = null;
         if (!feed) feed = $scope.comboSelectedFeed;
         for (var i = 0; i < $scope.feeds.length; i++) {
             $scope.feeds[i].selected = false;
         }
-        $scope.currentFeed = { title: feed.Title };
+        $scope.currentFeed = feed;
         feed.selected = true;
         var postFeedRequest = feedService.loadPosts(feed.Id);
         postFeedRequest.success(function (posts) {
             for (var i = 0; i < posts.length; i++)
                 posts[i].PublishDate = feedService.formatDate(posts[i].PublishDate);
-            $scope.currentFeed.Posts = posts;
+            $scope.currentPosts = posts;
+        });
+    };
+
+    $scope.markFeedAsRead = function(feed) {
+        console.log(feed);
+        var result = feedService.markFeedAsRead(feed);
+
+        result.success(function() {
+            $scope.feedSelected(feed);
+            for(var i=0;i<$scope.feeds.length;i++)
+                if ($scope.feeds[i].Id == feed.Id)
+                    $scope.feeds[i].UnreadCount = 0;
         });
     };
 

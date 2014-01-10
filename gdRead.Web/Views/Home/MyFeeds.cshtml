@@ -40,16 +40,16 @@
             </div>
         </div>
         <div class="col-md-10" id="FeedReadingPane">
-            <div class="Header"><h2>{{currentFeed.title}}</h2></div>
+            <div class="Header"><h2>{{currentFeed.Title}}</h2></div>
             <div class="PostContainer">
-                <div ng-show="currentFeed.Posts" id="feedToolBar">
+                <div ng-show="currentPosts" id="feedToolBar">
                     <div class="text-right">
                         <button>Unsubscribe</button>
                         <button>Refresh</button>
-                        <button>Mark All As Read</button>
+                        <button ng-click="markFeedAsRead(currentFeed)">Mark All As Read</button>
                     </div>
                 </div>
-                <div ng-repeat="post in currentFeed.Posts">
+                <div ng-repeat="post in currentPosts">
                     <div ng-class-odd="'TableRow'" ng-class-even="'AlternatingTableRow'" class="PostHeader" ng-click="selectPost(post)">
                         <div class="PostTitle">
                             <span ng-show="post.Selected">&#9660;</span>

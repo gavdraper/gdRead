@@ -50,6 +50,37 @@ namespace gdRead.Data.Repositories
                 con.Close();
             }
         }
+        
+        public void SetPostsInFeedAsRead(int feedId, Guid userId)
+        {
+            using (var con = new SqlConnection(_conStr))
+            {
+                con.Open();
+                con.Query<DateTime?>(
+                    @"
+                    DECLARE @SubscriptionId INT
+                    SELECT @SubscriptionId = Id FROM Subscription WHERE UserId = @UserId AND FeedId = @FeedId
+
+                    INSERT INTO SubscriptionPostRead
+                    SELECT
+	                    @SubscriptionId, Post.Id
+                    FROM
+	                    Feed
+	                    INNER JOIN SubScription ON Subscription.FeeDId = Feed.Id
+	                    INNER JOIN Post ON Post.FeedId = Feed.Id 
+	                    LEFT JOIN SubscriptionPostRead sr ON sr.postId = post.Id AND sr.SubscriptionId = Subscription.Id
+                    WHERE
+	                    Subscription.UserId = @UserId AND
+	
+	                    Feed.Id = @FeedId AND
+	                    sr.ID IS NULL
+                    "
+                    ,
+                    new { FeedId = feedId, UserId = userId });
+                con.Close();
+            }
+        }
+
 
         public Post AddPost(Post post)
         {
