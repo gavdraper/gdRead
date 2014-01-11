@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Net;
 using System.ServiceModel.Syndication;
 using System.Threading.Tasks;
 using System.Xml;
@@ -43,13 +44,28 @@ namespace gdRead.FeedUtils
 
                 if (string.IsNullOrEmpty(feed.Title))
                 {
-                    feed.Title = rssFeed.Title != null ? rssFeed.Title.Text : "No Title";
+                    if(rssFeed.Title != null)
+                        feed.Title = rssFeed.Title.Text;
+                    if (feed.Title == "")
+                    {
+                        if (rssFeed.Authors.Count > 0 && !string.IsNullOrEmpty(rssFeed.Authors[0].Name))
+                        {
+                            feed.Title = rssFeed.Authors[0].Name;
+                        }
+                        else
+                            feed.Title = feed.Url.ToLower()
+                                .Replace("http://", "")
+                                .Replace("https://", "")
+                                .Replace("www", "");
+                    }
+
+
                     feedRepository.UpdateFeed(feed);
                 }
 
                 var lastPublishDate = getLastPublishDate(feed);
 
-                foreach (var feedPost in rssFeed.Items.Where(x => x.PublishDate.UtcDateTime > lastPublishDate))
+                foreach (var feedPost in rssFeed.Items.Where(x => (x.PublishDate.UtcDateTime == DateTime.MinValue ? x.LastUpdatedTime.UtcDateTime : x.PublishDate.UtcDateTime ) > lastPublishDate))
                 {
                     var post = new Post()
                     {
@@ -58,13 +74,13 @@ namespace gdRead.FeedUtils
                         Summary = feedPost.Summary != null ? feedPost.Summary.Text : "",
                         Content = feedPost.Summary != null ? feedPost.Summary.Text : "",
                         FeedId = feed.Id,
-                        PublishDate = feedPost.PublishDate.UtcDateTime,
+                        PublishDate = feedPost.PublishDate.UtcDateTime == DateTime.MinValue ? feedPost.LastUpdatedTime.UtcDateTime : feedPost.PublishDate.UtcDateTime,
                         Read = false
                     };
 
                     //get the encoded content or content
                     if (feedPost.Content != null)
-                        post.Content = feedPost.Content.ToString();
+                        post.Content = ((TextSyndicationContent)feedPost.Content).Text;
                     else
                     {
                         foreach (var ext in feedPost.ElementExtensions)
