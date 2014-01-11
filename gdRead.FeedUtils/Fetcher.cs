@@ -81,9 +81,9 @@ namespace gdRead.FeedUtils
                 }
                 feedRepository.UpdateLastchecked(feed.Id);
             }
-            catch(Exception ex)
+            catch
             {
-                
+                //TODO INSERT LOGGING CODE
             }
         }
 
