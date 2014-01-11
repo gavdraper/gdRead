@@ -109,6 +109,7 @@ namespace gdRead.Data.Repositories
                     WHERE 
 	                    post.FeedId = @FeedId
 	                    AND Subscription.UserId = @UserId
+                    ORDER BY PublishDate DESC
                     ", new {FeedId = feedId, UserId = userId});
                 con.Close();
                 return posts;
