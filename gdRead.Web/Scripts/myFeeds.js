@@ -71,9 +71,7 @@ gdRead.app.controller("myFeedCtrl", function ($scope, feedService, $modal, $time
     };
 
     $scope.markFeedAsRead = function(feed) {
-        console.log(feed);
         var result = feedService.markFeedAsRead(feed);
-
         result.success(function() {
             $scope.feedSelected(feed);
             for(var i=0;i<$scope.feeds.length;i++)
