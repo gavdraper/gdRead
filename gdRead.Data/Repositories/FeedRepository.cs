@@ -61,6 +61,16 @@ namespace gdRead.Data.Repositories
             }            
         }
 
+        public void UpdateLastchecked(int id)
+        {
+            using (var con = new SqlConnection(_conStr))
+            {
+                con.Open();
+                con.Execute(@"UPDATE Feed SET LastChecked = GETDATE() WHERE Id = @FeedId", new { FeedId = id });
+                con.Close();
+            }   
+        }
+
         public IEnumerable<Feed> GetSubscribedFeedsWithUnreadCount(Guid userId)
         {
             using (var con = new SqlConnection(_conStr))
@@ -68,7 +78,7 @@ namespace gdRead.Data.Repositories
                 con.Open();
                 var feed = con.Query<FeedViewModel>(@"                    
                 SELECT 
-	                Feed.* ,
+	                Feed.Id,Feed.Title,Feed.Url ,
 	                SUM(CASE WHEN sr.Id IS NULL THEN 1 ELSE 0 END) As UnreadCount
                 FROM 
 	                Feed 
@@ -80,6 +90,7 @@ namespace gdRead.Data.Repositories
 	                Feed.Id,
 	                Feed.Title,
 	                Feed.Url
+                ORDER BY Title
                 ", new { UserId = userId });
                 con.Close();
                 return feed;

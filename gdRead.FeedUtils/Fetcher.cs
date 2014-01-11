@@ -78,6 +78,7 @@ namespace gdRead.FeedUtils
                 }
                 postRepository.AddPost(post);
             }
+            feedRepository.UpdateLastchecked(feed.Id);
         }
 
         public void FetchAllFeeds()
