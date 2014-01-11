@@ -11,6 +11,7 @@ namespace gdRead.Web.Controllers
         // GET: /DevTest/
         public ActionResult ReFetchAll()
         {
+            HttpContext.Server.ScriptTimeout = 300;
             var fetcher = new Fetcher(_conStr);
             fetcher.FetchAllFeeds();
             return RedirectToAction("MyFeeds", "Home");
