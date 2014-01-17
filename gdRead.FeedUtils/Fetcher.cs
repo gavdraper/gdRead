@@ -32,6 +32,8 @@ namespace gdRead.FeedUtils
                 var feedRepository = new FeedRepository(_conStr);
                 var postRepository = new PostRepository(_conStr);
                 var feed = feedRepository.GetFeedById(feedId);
+                if (feed.LastChecked != null && feed.LastChecked.Value > DateTime.Now.AddMinutes(-10))
+                    return;
 
                 SyndicationFeed rssFeed;
                 using (

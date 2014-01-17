@@ -53,6 +53,16 @@ input[type="checkbox"].input-validation-error {
 
 
 /*MyFeed Page*/
+.LoginButton {
+    border-style: none;
+    background-color: transparent;
+    cursor: pointer;
+    cursor: hand;
+    color: #999999;
+    margin-right: 10px;
+    margin-top: 12px;
+}
+
 .UnReadPost {
     font-weight: bold;
 }

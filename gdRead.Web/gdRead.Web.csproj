@@ -190,6 +190,7 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Models\AccountViewModels.cs" />
+    <Compile Include="Models\Dashboard.cs" />
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />
@@ -246,11 +247,11 @@
     <Content Include="Views\Home\MyFeeds.cshtml" />
     <Content Include="Views\Error\Woops.cshtml" />
     <Content Include="Views\Error\NotFound.cshtml" />
+    <Content Include="Views\DevTest\Dashboard.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="Models\DTOs\" />
-    <Folder Include="Views\DevTest\" />
     <Folder Include="Views\PostRead\" />
   </ItemGroup>
   <ItemGroup>

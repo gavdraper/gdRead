@@ -1,0 +1,21 @@
+﻿@model gdRead.Data.Models.Dashboard
+@{
+    ViewBag.Title = "Dashboard";
+}
+
+<h2>gdReader Dashboard</h2>
+
+<b>Stats</b><br/>
+
+@Model.UserCount Registered Users<br/>
+@Model.FeedCount Feeds<br />
+@Model.PostCount Posts<br />
+@Model.SubscriptionCount Subscriptions<br />
+Last Full Fetch @Model.LastFetch.ToShortDateString() @Model.LastFetch.ToShortTimeString()<br />
+<hr style="margin-top:3px;margin-bottom:3px;" />
+<b>Actions</b><br/>
+
+@Html.ActionLink("Refresh Feeds","ReFetchAll") <br/>
+
+
+
