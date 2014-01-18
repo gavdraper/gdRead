@@ -4,16 +4,16 @@ gdRead.app = angular.module("gdReadModule", ['ngSanitize', 'ui.bootstrap']);
 gdRead.app.factory("feedService", function ($http, $rootScope, $timeout) {
     return {
         loadFeeds: function () {
-            return $http.get("/Api/Feeds");
+            return $http.get("/Api/Feed");
         },
         loadPosts: function (feedId) {
-            return $http.get("/Api/Posts/" + feedId);
+            return $http.get("/Api/Post/" + feedId);
         },
         loadAllPosts: function () {
-            return $http.get("/Api/Posts/");
+            return $http.get("/Api/Post/");
         },
         addFeed: function (url) {
-            return $http.post("/Api/Feeds/", { Url: url });
+            return $http.post("/Api/Feed/", { Url: url });
         },
         markPostAsRead: function (post) {
             return $http.post("/Api/PostRead/", post);

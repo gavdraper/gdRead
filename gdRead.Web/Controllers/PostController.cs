@@ -12,7 +12,7 @@ using Microsoft.AspNet.Identity;
 
 namespace gdRead.Web.Controllers
 {     
-    public class PostsController : ApiController
+    public class PostController : ApiController
     {
         private readonly string _conStr = ConfigurationManager.ConnectionStrings["gdRead.Data.gdReadContext"].ConnectionString;
         // GET api/<controller>

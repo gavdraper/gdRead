@@ -17,7 +17,7 @@ namespace gdRead.Web.Controllers
 
 
         [Authorize]
-        public void MarkAllAsRead([FromBody] Feed feed)
+        public void Post([FromBody] Feed feed)
         {
             var postRepository = new PostRepository(_conStr);
             var userId = Guid.Parse(HttpContext.Current.User.Identity.GetUserId());
