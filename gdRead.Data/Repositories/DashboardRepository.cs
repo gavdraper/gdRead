@@ -23,6 +23,7 @@ namespace gdRead.Data.Repositories
 	(SELECT COUNT(*) FROM Feed) AS FeedCount,
 	(SELECT COUNT(*) FROM Post) AS PostCount,
 	(SELECT COUNT(*) FROM Subscription) AS SubscriptionCount,
+    (SELECT (SUM(reserved_page_count) * 8192) / 1024 / 1024 AS DbSizeInMB FROM    sys.dm_db_partition_stats) AS DbSize,
 	(SELECT MAX(LastChecked) FROM Feed) AS LastFetch").FirstOrDefault();
                 con.Close();
                 return dashboard;

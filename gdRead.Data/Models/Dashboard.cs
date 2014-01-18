@@ -9,5 +9,6 @@ namespace gdRead.Data.Models
         public int PostCount { get; set; }
         public int SubscriptionCount { get; set; }
         public DateTime LastFetch { get; set; }
+        public int DbSize { get; set; }
     }
 }
