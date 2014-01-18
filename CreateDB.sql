@@ -1,6 +1,6 @@
 ﻿USE [master]
 GO
-/****** Object:  Database [gdRead]    Script Date: 07/01/2014 11:16:03 ******/
+/****** Object:  Database [gdRead]    Script Date: 18/01/2014 07:42:17 ******/
 CREATE DATABASE [gdRead]
 GO
 ALTER DATABASE [gdRead] SET COMPATIBILITY_LEVEL = 100
@@ -66,7 +66,7 @@ ALTER DATABASE [gdRead] SET DB_CHAINING OFF
 GO
 USE [gdRead]
 GO
-/****** Object:  StoredProcedure [dbo].[ELMAH_GetErrorsXml]    Script Date: 07/01/2014 11:16:03 ******/
+/****** Object:  StoredProcedure [dbo].[ELMAH_GetErrorsXml]    Script Date: 18/01/2014 07:42:17 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -89,11 +89,11 @@ DECLARE @StartRow INT
 DECLARE @StartRowIndex INT
 
 SELECT 
-	@TotalCount = COUNT(1) 
+    @TotalCount = COUNT(1) 
 FROM 
-	[ELMAH_Error]
+    [ELMAH_Error]
 WHERE 
-	[Application] = @Application
+    [Application] = @Application
 
 -- Get the ID of the first error for the requested page
 
@@ -102,24 +102,24 @@ SET @StartRowIndex = @PageIndex * @PageSize + 1
 IF @StartRowIndex <= @TotalCount
 BEGIN
 
-	SET ROWCOUNT @StartRowIndex
+    SET ROWCOUNT @StartRowIndex
 
-	SELECT  
-		@FirstTimeUTC = [TimeUtc],
-		@FirstSequence = [Sequence]
-	FROM 
-		[ELMAH_Error]
-	WHERE   
-		[Application] = @Application
-	ORDER BY 
-		[TimeUtc] DESC, 
-		[Sequence] DESC
+    SELECT  
+        @FirstTimeUTC = [TimeUtc],
+        @FirstSequence = [Sequence]
+    FROM 
+        [ELMAH_Error]
+    WHERE   
+        [Application] = @Application
+    ORDER BY 
+        [TimeUtc] DESC, 
+        [Sequence] DESC
 
 END
 ELSE
 BEGIN
 
-	SET @PageSize = 0
+    SET @PageSize = 0
 
 END
 
@@ -129,32 +129,32 @@ END
 SET ROWCOUNT @PageSize
 
 SELECT 
-	errorId     = [ErrorId], 
-	application = [Application],
-	host        = [Host], 
-	type        = [Type],
-	source      = [Source],
-	message     = [Message],
-	[user]      = [User],
-	statusCode  = [StatusCode], 
-	time        = CONVERT(VARCHAR(50), [TimeUtc], 126) + 'Z'
+    errorId     = [ErrorId], 
+    application = [Application],
+    host        = [Host], 
+    type        = [Type],
+    source      = [Source],
+    message     = [Message],
+    [user]      = [User],
+    statusCode  = [StatusCode], 
+    time        = CONVERT(VARCHAR(50), [TimeUtc], 126) + 'Z'
 FROM 
-	[ELMAH_Error] error
+    [ELMAH_Error] error
 WHERE
-	[Application] = @Application
+    [Application] = @Application
 AND
-	[TimeUtc] <= @FirstTimeUTC
+    [TimeUtc] <= @FirstTimeUTC
 AND 
-	[Sequence] <= @FirstSequence
+    [Sequence] <= @FirstSequence
 ORDER BY
-	[TimeUtc] DESC, 
-	[Sequence] DESC
+    [TimeUtc] DESC, 
+    [Sequence] DESC
 FOR
-	XML AUTO
+    XML AUTO
 
 
 GO
-/****** Object:  StoredProcedure [dbo].[ELMAH_GetErrorXml]    Script Date: 07/01/2014 11:16:03 ******/
+/****** Object:  StoredProcedure [dbo].[ELMAH_GetErrorXml]    Script Date: 18/01/2014 07:42:17 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -170,17 +170,17 @@ AS
 SET NOCOUNT ON
 
 SELECT 
-	[AllXml]
+    [AllXml]
 FROM 
-	[ELMAH_Error]
+    [ELMAH_Error]
 WHERE
-	[ErrorId] = @ErrorId
+    [ErrorId] = @ErrorId
 AND
-	[Application] = @Application
+    [Application] = @Application
 
 
 GO
-/****** Object:  StoredProcedure [dbo].[ELMAH_LogError]    Script Date: 07/01/2014 11:16:03 ******/
+/****** Object:  StoredProcedure [dbo].[ELMAH_LogError]    Script Date: 18/01/2014 07:42:17 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -205,36 +205,36 @@ SET NOCOUNT ON
 
 INSERT
 INTO
-	[ELMAH_Error]
-	(
-		[ErrorId],
-		[Application],
-		[Host],
-		[Type],
-		[Source],
-		[Message],
-		[User],
-		[AllXml],
-		[StatusCode],
-		[TimeUtc]
-	)
+    [ELMAH_Error]
+    (
+        [ErrorId],
+        [Application],
+        [Host],
+        [Type],
+        [Source],
+        [Message],
+        [User],
+        [AllXml],
+        [StatusCode],
+        [TimeUtc]
+    )
 VALUES
-	(
-		@ErrorId,
-		@Application,
-		@Host,
-		@Type,
-		@Source,
-		@Message,
-		@User,
-		@AllXml,
-		@StatusCode,
-		@TimeUtc
-	)
+    (
+        @ErrorId,
+        @Application,
+        @Host,
+        @Type,
+        @Source,
+        @Message,
+        @User,
+        @AllXml,
+        @StatusCode,
+        @TimeUtc
+    )
 
 
 GO
-/****** Object:  Table [dbo].[AspNetRoles]    Script Date: 07/01/2014 11:16:03 ******/
+/****** Object:  Table [dbo].[AspNetRoles]    Script Date: 18/01/2014 07:42:17 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -249,7 +249,7 @@ CREATE TABLE [dbo].[AspNetRoles](
 )
 
 GO
-/****** Object:  Table [dbo].[AspNetUserClaims]    Script Date: 07/01/2014 11:16:03 ******/
+/****** Object:  Table [dbo].[AspNetUserClaims]    Script Date: 18/01/2014 07:42:17 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -266,7 +266,7 @@ CREATE TABLE [dbo].[AspNetUserClaims](
 )
 
 GO
-/****** Object:  Table [dbo].[AspNetUserLogins]    Script Date: 07/01/2014 11:16:03 ******/
+/****** Object:  Table [dbo].[AspNetUserLogins]    Script Date: 18/01/2014 07:42:17 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -284,7 +284,7 @@ CREATE TABLE [dbo].[AspNetUserLogins](
 )
 
 GO
-/****** Object:  Table [dbo].[AspNetUserRoles]    Script Date: 07/01/2014 11:16:03 ******/
+/****** Object:  Table [dbo].[AspNetUserRoles]    Script Date: 18/01/2014 07:42:17 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -300,7 +300,7 @@ CREATE TABLE [dbo].[AspNetUserRoles](
 )
 
 GO
-/****** Object:  Table [dbo].[AspNetUsers]    Script Date: 07/01/2014 11:16:04 ******/
+/****** Object:  Table [dbo].[AspNetUsers]    Script Date: 18/01/2014 07:42:17 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -318,7 +318,7 @@ CREATE TABLE [dbo].[AspNetUsers](
 )
 
 GO
-/****** Object:  Table [dbo].[ELMAH_Error]    Script Date: 07/01/2014 11:16:04 ******/
+/****** Object:  Table [dbo].[ELMAH_Error]    Script Date: 18/01/2014 07:42:18 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -342,7 +342,7 @@ CREATE TABLE [dbo].[ELMAH_Error](
 )
 
 GO
-/****** Object:  Table [dbo].[Feed]    Script Date: 07/01/2014 11:16:04 ******/
+/****** Object:  Table [dbo].[Feed]    Script Date: 18/01/2014 07:42:18 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -351,8 +351,7 @@ CREATE TABLE [dbo].[Feed](
 	[Id] [int] IDENTITY(1,1) NOT NULL,
 	[Title] [nvarchar](max) NULL,
 	[Url] [nvarchar](max) NULL,
-	[Description] [nvarchar](max) NULL,
-	[DisplayName] [nvarchar](max) NULL,
+	[LastChecked] [datetime] NULL,
  CONSTRAINT [PK_dbo.Feeds] PRIMARY KEY CLUSTERED 
 (
 	[Id] ASC
@@ -360,7 +359,7 @@ CREATE TABLE [dbo].[Feed](
 )
 
 GO
-/****** Object:  Table [dbo].[Post]    Script Date: 07/01/2014 11:16:04 ******/
+/****** Object:  Table [dbo].[Post]    Script Date: 18/01/2014 07:42:18 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -381,7 +380,7 @@ CREATE TABLE [dbo].[Post](
 )
 
 GO
-/****** Object:  Table [dbo].[Subscription]    Script Date: 07/01/2014 11:16:04 ******/
+/****** Object:  Table [dbo].[Subscription]    Script Date: 18/01/2014 07:42:18 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -397,7 +396,7 @@ CREATE TABLE [dbo].[Subscription](
 )
 
 GO
-/****** Object:  Table [dbo].[SubscriptionPostRead]    Script Date: 07/01/2014 11:16:04 ******/
+/****** Object:  Table [dbo].[SubscriptionPostRead]    Script Date: 18/01/2014 07:42:18 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -416,7 +415,7 @@ GO
 SET ANSI_PADDING ON
 
 GO
-/****** Object:  Index [IX_User_Id]    Script Date: 07/01/2014 11:16:04 ******/
+/****** Object:  Index [IX_User_Id]    Script Date: 18/01/2014 07:42:18 ******/
 CREATE NONCLUSTERED INDEX [IX_User_Id] ON [dbo].[AspNetUserClaims]
 (
 	[User_Id] ASC
@@ -425,7 +424,7 @@ GO
 SET ANSI_PADDING ON
 
 GO
-/****** Object:  Index [IX_UserId]    Script Date: 07/01/2014 11:16:04 ******/
+/****** Object:  Index [IX_UserId]    Script Date: 18/01/2014 07:42:18 ******/
 CREATE NONCLUSTERED INDEX [IX_UserId] ON [dbo].[AspNetUserLogins]
 (
 	[UserId] ASC
@@ -434,7 +433,7 @@ GO
 SET ANSI_PADDING ON
 
 GO
-/****** Object:  Index [IX_RoleId]    Script Date: 07/01/2014 11:16:04 ******/
+/****** Object:  Index [IX_RoleId]    Script Date: 18/01/2014 07:42:18 ******/
 CREATE NONCLUSTERED INDEX [IX_RoleId] ON [dbo].[AspNetUserRoles]
 (
 	[RoleId] ASC
@@ -443,7 +442,7 @@ GO
 SET ANSI_PADDING ON
 
 GO
-/****** Object:  Index [IX_UserId]    Script Date: 07/01/2014 11:16:04 ******/
+/****** Object:  Index [IX_UserId]    Script Date: 18/01/2014 07:42:18 ******/
 CREATE NONCLUSTERED INDEX [IX_UserId] ON [dbo].[AspNetUserRoles]
 (
 	[UserId] ASC
@@ -452,7 +451,7 @@ GO
 SET ANSI_PADDING ON
 
 GO
-/****** Object:  Index [IX_ELMAH_Error_App_Time_Seq]    Script Date: 07/01/2014 11:16:04 ******/
+/****** Object:  Index [IX_ELMAH_Error_App_Time_Seq]    Script Date: 18/01/2014 07:42:18 ******/
 CREATE NONCLUSTERED INDEX [IX_ELMAH_Error_App_Time_Seq] ON [dbo].[ELMAH_Error]
 (
 	[Application] ASC,
@@ -460,19 +459,21 @@ CREATE NONCLUSTERED INDEX [IX_ELMAH_Error_App_Time_Seq] ON [dbo].[ELMAH_Error]
 	[Sequence] DESC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)
 GO
-/****** Object:  Index [IX_Feed_Id]    Script Date: 07/01/2014 11:16:04 ******/
+/****** Object:  Index [IX_Feed_Id]    Script Date: 18/01/2014 07:42:18 ******/
 CREATE NONCLUSTERED INDEX [IX_Feed_Id] ON [dbo].[Post]
 (
 	[FeedId] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)
 GO
-/****** Object:  Index [IX_Feed_Id]    Script Date: 07/01/2014 11:16:04 ******/
+/****** Object:  Index [IX_Feed_Id]    Script Date: 18/01/2014 07:42:18 ******/
 CREATE NONCLUSTERED INDEX [IX_Feed_Id] ON [dbo].[Subscription]
 (
 	[FeedId] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)
 GO
 ALTER TABLE [dbo].[ELMAH_Error] ADD  CONSTRAINT [DF_ELMAH_Error_ErrorId]  DEFAULT (newid()) FOR [ErrorId]
+GO
+ALTER TABLE [dbo].[Feed] ADD  DEFAULT (getdate()) FOR [LastChecked]
 GO
 ALTER TABLE [dbo].[AspNetUserClaims]  WITH CHECK ADD  CONSTRAINT [FK_dbo.AspNetUserClaims_dbo.AspNetUsers_User_Id] FOREIGN KEY([User_Id])
 REFERENCES [dbo].[AspNetUsers] ([Id])
