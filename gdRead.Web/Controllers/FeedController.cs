@@ -23,6 +23,14 @@ namespace gdRead.Web.Controllers
             var feedRepository = new FeedRepository(_conStr);
             return feedRepository.GetSubscribedFeedsWithUnreadCount(userId);
         }
+
+        [Authorize]
+        public void Delete(int id)
+        {
+            var userId = Guid.Parse(HttpContext.Current.User.Identity.GetUserId());
+            var subscriptionRepository = new SubscriptionRepository(_conStr);
+            subscriptionRepository.Unsubscribe(id,userId);
+        }
         
         [Authorize]
         public void Post([FromBody] FeedPostModel feedPost)

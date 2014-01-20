@@ -24,6 +24,9 @@ gdRead.app.factory("feedService", function ($http, $rootScope, $timeout) {
         formatDate: function (longDate) {
             return longDate.replace("T", " ");
         },
+        unsubscribe: function (feed) {
+            return $http.delete("/Api/Feed/" + feed.Id);
+        },
         focus: function (name) {
             $timeout(function () {
                 $rootScope.$broadcast('focusOn', name);
@@ -71,13 +74,25 @@ gdRead.app.controller("myFeedCtrl", function ($scope, feedService, $modal, $time
         });
     };
 
-    $scope.markFeedAsRead = function(feed) {
+    $scope.markFeedAsRead = function (feed) {
         var result = feedService.markFeedAsRead(feed);
-        result.success(function() {
+        result.success(function () {
             $scope.feedSelected(feed);
-            for(var i=0;i<$scope.feeds.length;i++)
+            for (var i = 0; i < $scope.feeds.length; i++)
                 if ($scope.feeds[i].Id == feed.Id)
                     $scope.feeds[i].UnreadCount = 0;
+        });
+    };
+
+    $scope.unsubscribe = function (feed) {
+        var result = feedService.unsubscribe(feed);
+        result.success(function () {
+            $scope.currentFeed = { Title: "All Feeds" };
+            $scope.currentPosts = null;
+            for (var i = 0; i < $scope.feeds.length; i++) {
+                if($scope.feeds[i].Id == feed.Id)
+                    $scope.feeds.splice(i, 1);
+            }
         });
     };
 
@@ -104,7 +119,7 @@ gdRead.app.controller("myFeedCtrl", function ($scope, feedService, $modal, $time
     };
 
     $scope.minimizeMaximiseFeedList = function () {
-        $scope.feedsExpanded = ! $scope.feedsExpanded;
+        $scope.feedsExpanded = !$scope.feedsExpanded;
     };
 
     $scope.openAddFeedModal = function () {

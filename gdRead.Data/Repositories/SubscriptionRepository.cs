@@ -26,6 +26,21 @@ namespace gdRead.Data.Repositories
             }
         }
 
+        public void Unsubscribe(int feedId, Guid userId)
+        {
+            using (var con = new SqlConnection(_conStr))
+            {
+                con.Open();                
+                con.Execute(@"
+                    DECLARE @SubId INT
+                    SELECT @SubId = Id FROM Subscription WHERE FeedId = @FeedId AND UserId = @UserId
+                    DELETE FROM SubscriptionPostRead WHERE SubscriptionId = @SubId
+                    DELETE FROM Subscription WHERE id = @SubId", new { UserId = userId, FeedId = feedId });
+                con.Close();
+            }            
+        }
+
+
         public Subscription GetSubscriptionByFeedAndUser(int feedId, Guid userId)
         {
             using (var con = new SqlConnection(_conStr))

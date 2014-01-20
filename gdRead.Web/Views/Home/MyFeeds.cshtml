@@ -47,7 +47,7 @@
             <div class="PostContainer">
                 <div ng-show="currentPosts" id="feedToolBar">
                     <div class="text-right">
-                        <button>Unsubscribe</button>
+                        <button ng-click="unsubscribe(currentFeed)">Unsubscribe</button>
                         <button>Refresh</button>
                         <button ng-click="markFeedAsRead(currentFeed)">Mark All As Read</button>
                     </div>
