@@ -22,9 +22,12 @@
             </div>
             <div id="FeedList" class="visible-md visible-lg">
                 <div ng-show="feedsLoading">Loading Feeds...</div>
-                Feeds
+                <a href="#" ng-click="minimizeMaximiseFeedList()">
+                    <span ng-show="feedsExpanded">-</span>
+                    <span ng-hide="feedsExpanded">+</span>
+                </a> Feeds
                 <hr />
-                <ul>
+                <ul ng-show="feedsExpanded">
                     <li ng-repeat="feed in feeds" class="FeedItem">
                         <button ng-click="feedSelected(feed)" ng-class="{SelectedFeed:feed.selected}" ng-class="{UnReadPost:feed.UnreadCount>0}">
                             <div class="FeedTitle" ng-class="{UnReadPost:feed.UnreadCount>0}">{{feed.Title}}</div>

@@ -44,6 +44,7 @@ gdRead.app.directive('focusOn', function () {
 
 gdRead.app.controller("myFeedCtrl", function ($scope, feedService, $modal, $timeout) {
     $scope.feedsLoading = true;
+    $scope.feedsExpanded = true;
     var feedRequest = feedService.loadFeeds();
     feedRequest.success(function (feeds) {
         $scope.feeds = feeds;
@@ -100,6 +101,10 @@ gdRead.app.controller("myFeedCtrl", function ($scope, feedService, $modal, $time
         } else {
             post.Selected = false;
         }
+    };
+
+    $scope.minimizeMaximiseFeedList = function () {
+        $scope.feedsExpanded = ! $scope.feedsExpanded;
     };
 
     $scope.openAddFeedModal = function () {
