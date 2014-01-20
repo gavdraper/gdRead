@@ -92,8 +92,8 @@
 
 @section scripts
 {
-    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.6/angular.min.js"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.6/angular-sanitize.js"></script>
-    <script src="http://angular-ui.github.io/bootstrap/ui-bootstrap-tpls-0.9.0.js"></script>
-    <script src="~/Scripts/myFeeds.js"></script>
+    @Scripts.Render("~/bundles/angular")
+    @Scripts.Render("~/bundles/angular-sanitize")
+    @Scripts.Render("~/bundles/angular-bootstrap")
+    @Scripts.Render("~/bundles/myFeeds")
 }

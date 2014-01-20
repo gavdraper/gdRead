@@ -1,7 +1,7 @@
 ﻿var gdRead = gdRead || {};
 gdRead.app = angular.module("gdReadModule", ['ngSanitize', 'ui.bootstrap']);
 
-gdRead.app.factory("feedService", function ($http, $rootScope, $timeout) {
+gdRead.app.factory("feedService", ["$http", "$rootScope", "$timeout", function ($http, $rootScope, $timeout) {
     return {
         loadFeeds: function () {
             return $http.get("/Api/Feed");
@@ -33,7 +33,7 @@ gdRead.app.factory("feedService", function ($http, $rootScope, $timeout) {
             });
         }
     };
-});
+}]);
 
 gdRead.app.directive('focusOn', function () {
     return function (scope, elem, attr) {
@@ -45,15 +45,8 @@ gdRead.app.directive('focusOn', function () {
     };
 });
 
-gdRead.app.controller("myFeedCtrl", function ($scope, feedService, $modal, $timeout) {
-    $scope.feedsLoading = true;
-    $scope.feedsExpanded = true;
-    var feedRequest = feedService.loadFeeds();
-    feedRequest.success(function (feeds) {
-        $scope.feeds = feeds;
-        $scope.feedsLoading = false;
-    });
-
+gdRead.app.controller("myFeedCtrl", ["$scope", "feedService", "$modal", "$timeout", function ($scope, feedService, $modal, $timeout) {
+    //Scope Methods
     $scope.selectAllFeeds = function () {
         $scope.currentFeed = { Title: "All Feeds" };
     };
@@ -79,7 +72,7 @@ gdRead.app.controller("myFeedCtrl", function ($scope, feedService, $modal, $time
         result.success(function () {
             $scope.feedSelected(feed);
             for (var i = 0; i < $scope.feeds.length; i++)
-                if ($scope.feeds[i].Id == feed.Id)
+                if ($scope.feeds[i].Id === feed.Id)
                     $scope.feeds[i].UnreadCount = 0;
         });
     };
@@ -90,7 +83,7 @@ gdRead.app.controller("myFeedCtrl", function ($scope, feedService, $modal, $time
             $scope.currentFeed = { Title: "All Feeds" };
             $scope.currentPosts = null;
             for (var i = 0; i < $scope.feeds.length; i++) {
-                if($scope.feeds[i].Id == feed.Id)
+                if($scope.feeds[i].Id === feed.Id)
                     $scope.feeds.splice(i, 1);
             }
         });
@@ -105,13 +98,11 @@ gdRead.app.controller("myFeedCtrl", function ($scope, feedService, $modal, $time
                 result.success(function () {
                     post.Read = true;
                     for (var i = 0; i < $scope.feeds.length; i++) {
-                        if ($scope.feeds[i].Id == post.FeedId) {
+                        if ($scope.feeds[i].Id === post.FeedId) {
                             $scope.feeds[i].UnreadCount -= 1;
                         }
                     }
-
                 });
-
             }
         } else {
             post.Selected = false;
@@ -125,11 +116,9 @@ gdRead.app.controller("myFeedCtrl", function ($scope, feedService, $modal, $time
     $scope.openAddFeedModal = function () {
         var modalInstance = $modal.open({
             templateUrl: 'addFeedWindow.html',
-            controller: addFeedModalCtrl
+            controller: "addFeedModalCtrl"
         });
-
         $timeout(function () { feedService.focus("addFeedFocus"); }, 0);
-
         modalInstance.result.then(function () {
             feedRequest = feedService.loadFeeds();
             feedRequest.success(function (feeds) {
@@ -138,11 +127,22 @@ gdRead.app.controller("myFeedCtrl", function ($scope, feedService, $modal, $time
         });
     };
 
+    //Init Scope
+    $scope.feedsLoading = true;
+    $scope.feedsExpanded = true;
     $scope.selectAllFeeds();
-});
+
+    //Load Feeds
+    var feedRequest = feedService.loadFeeds();
+    feedRequest.success(function (feeds) {
+        $scope.feeds = feeds;
+        $scope.feedsLoading = false;
+    });
+}]);
 
 
-var addFeedModalCtrl = function ($scope, $modalInstance, feedService) {
+
+gdRead.app.controller("addFeedModalCtrl", ["$scope", "$modalInstance", "feedService", function ($scope, $modalInstance, feedService) {
     $scope.feedLoading = false;
     $scope.modelValues = {};
     $scope.ok = function () {
@@ -159,4 +159,4 @@ var addFeedModalCtrl = function ($scope, $modalInstance, feedService) {
     $scope.cancel = function () {
         $modalInstance.dismiss();
     };
-};
+}]);
