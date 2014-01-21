@@ -21,6 +21,9 @@ gdRead.app.factory("feedService", ["$http", "$rootScope", "$timeout", function (
         markFeedAsRead: function (feed) {
             return $http.post("/Api/FeedRead/", feed);
         },
+        loadPostContent: function (postId) {
+            return $http.get("/Api/Post/ContentOnly/" + postId);
+        },
         formatDate: function (longDate) {
             return longDate.replace("T", " ");
         },
@@ -45,7 +48,7 @@ gdRead.app.directive('focusOn', function () {
     };
 });
 
-gdRead.app.controller("myFeedCtrl", ["$scope", "feedService", "$modal", "$timeout", function ($scope, feedService, $modal, $timeout) {
+gdRead.app.controller("myFeedCtrl", ["$scope", "feedService", "$modal", "$timeout", "$sce", function ($scope, feedService, $modal, $timeout, $sce) {
     //Scope Methods
     $scope.selectAllFeeds = function () {
         $scope.currentFeed = { Title: "All Feeds" };
@@ -83,7 +86,7 @@ gdRead.app.controller("myFeedCtrl", ["$scope", "feedService", "$modal", "$timeou
             $scope.currentFeed = { Title: "All Feeds" };
             $scope.currentPosts = null;
             for (var i = 0; i < $scope.feeds.length; i++) {
-                if($scope.feeds[i].Id === feed.Id)
+                if ($scope.feeds[i].Id === feed.Id)
                     $scope.feeds.splice(i, 1);
             }
         });
@@ -92,9 +95,19 @@ gdRead.app.controller("myFeedCtrl", ["$scope", "feedService", "$modal", "$timeou
     $scope.selectPost = function (post) {
         if (!post.Selected) {
             post.Selected = true;
+
+
+            if (!post.Content || post.Content === "") {
+                var loadPostContent = feedService.loadPostContent(post.Id);
+                post.Loading = true;
+                loadPostContent.success(function (data) {
+                    post.Loading = false;
+                    post.Content = data.Content;
+                });
+            }
+
             if (!post.Read) {
                 var result = feedService.markPostAsRead(post);
-
                 result.success(function () {
                     post.Read = true;
                     for (var i = 0; i < $scope.feeds.length; i++) {
@@ -104,6 +117,7 @@ gdRead.app.controller("myFeedCtrl", ["$scope", "feedService", "$modal", "$timeou
                     }
                 });
             }
+
         } else {
             post.Selected = false;
         }

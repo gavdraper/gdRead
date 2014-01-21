@@ -67,6 +67,7 @@
 
                         <div ng-hide="!post.Selected" class="TableRow PostContent">
                             <a target="_blank" class="PostTitleLink" href="{{post.Url}}">{{post.Name}}</a>
+                            <div ng-show="post.Loading" style="width:100%;text-align:center;"><img src="@Url.Content("~/Content/ajax-loader.gif")"/></div>
                             <div ng-bind-html="post.Content"></div>
                         </div>
                     </div>

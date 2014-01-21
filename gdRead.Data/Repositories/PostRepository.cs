@@ -115,5 +115,47 @@ namespace gdRead.Data.Repositories
                 return posts;
             }
         }
+
+        public string GetPostContent(int postId)
+        {
+            using (var con = new SqlConnection(_conStr))
+            {
+                con.Open();
+                var post = con.Query<string>(@"
+                    SELECT 
+	                    Post.Content
+                    FROM 
+	                    Post                       
+                    WHERE 
+	                    post.Id = @PostId
+                    ", new { PostId = postId }).FirstOrDefault();
+                con.Close();
+                return post;
+            } 
+        }
+
+        public IEnumerable<Post> GetPostsFromFeedWithoutContent(int feedId, Guid userId)
+        {
+            using (var con = new SqlConnection(_conStr))
+            {
+                con.Open();
+                var posts = con.Query<Post>(@"
+                    SELECT 
+	                    Post.Id, Post.Name, Post.Url, Post.PublishDate, Post.DateFetched, Post.FeedId
+	                    , CASE WHEN SubscriptionPostRead.Id IS NOT NULL THEN 1 ELSE 0 END AS [Read]
+                    FROM 
+	                    Post
+                        INNER JOIN Subscription ON Subscription.FeedId = Post.FeedId 
+	                    LEFT JOIN SubscriptionPostRead ON SubscriptionPostRead.SubscriptionId = Subscription.Id AND SubscriptionPostRead.PostId = Post.Id
+                    WHERE 
+	                    post.FeedId = @FeedId
+	                    AND Subscription.UserId = @UserId
+                    ORDER BY PublishDate DESC
+                    ", new { FeedId = feedId, UserId = userId });
+                con.Close();
+                return posts;
+            }
+        }
+
     }
 }
