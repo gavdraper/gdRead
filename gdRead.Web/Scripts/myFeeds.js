@@ -1,16 +1,16 @@
 ﻿var gdRead = gdRead || {};
-gdRead.app = angular.module("gdReadModule", ['ngSanitize', 'ui.bootstrap']);
+gdRead.app = angular.module("gdReadModule", ['ngSanitize', 'ui.bootstrap', 'infinite-scroll']);
 
 gdRead.app.factory("feedService", ["$http", "$rootScope", "$timeout", function ($http, $rootScope, $timeout) {
     return {
         loadFeeds: function () {
             return $http.get("/Api/Feed");
         },
-        loadPosts: function (feedId) {
-            return $http.get("/Api/Post/" + feedId);
+        loadPosts: function (feedId,page) {
+            return $http.get("/Api/Feed/" + feedId + "/Post/Page/" + page);
         },
-        loadAllPosts: function () {
-            return $http.get("/Api/Post/");
+        loadAllPosts: function (page) {
+            return $http.get("/Api/Post/Page/" + page);
         },
         addFeed: function (url) {
             return $http.post("/Api/Feed/", { Url: url });
@@ -48,13 +48,39 @@ gdRead.app.directive('focusOn', function () {
     };
 });
 
-gdRead.app.controller("myFeedCtrl", ["$scope", "feedService", "$modal", "$timeout", "$sce", function ($scope, feedService, $modal, $timeout, $sce) {
+gdRead.app.controller("myFeedCtrl", ["$scope", "feedService", "$modal", "$timeout", "$sce",'$anchorScroll', '$location', function ($scope, feedService, $modal, $timeout, $sce, $anchorScroll, $location) {
     //Scope Methods
+    $scope.loadNextPage = function () {
+        var postFeedRequest;
+        if ($scope.currentFeed.Id != null)
+            postFeedRequest = feedService.loadPosts($scope.currentFeed.Id, $scope.currentPage);
+        else postFeedRequest = feedService.loadAllPosts($scope.currentPage);
+        postFeedRequest.success(function (posts) {
+            console.log(posts);
+            $scope.currentPage++;
+            if (!$scope.currentPosts)
+                $scope.currentPosts = [];
+            for (var i = 0; i < posts.length; i++) {
+                posts[i].PublishDate = feedService.formatDate(posts[i].PublishDate);
+                $scope.currentPosts.push(posts[i]);
+            }
+        });
+    };
+
     $scope.selectAllFeeds = function () {
         $scope.currentFeed = { Title: "All Feeds" };
+        $scope.currentPage = 1;
+        $scope.currentPosts = null;
+        if ($scope.feeds) {
+            for (var i = 0; i < $scope.feeds.length; i++) {
+                $scope.feeds[i].selected = false;
+            }
+        }
+        $scope.loadNextPage();
     };
 
     $scope.feedSelected = function (feed) {
+        $scope.currentPage = 1;
         $scope.currentPosts = null;
         if (!feed) feed = $scope.comboSelectedFeed;
         for (var i = 0; i < $scope.feeds.length; i++) {
@@ -62,12 +88,8 @@ gdRead.app.controller("myFeedCtrl", ["$scope", "feedService", "$modal", "$timeou
         }
         $scope.currentFeed = feed;
         feed.selected = true;
-        var postFeedRequest = feedService.loadPosts(feed.Id);
-        postFeedRequest.success(function (posts) {
-            for (var i = 0; i < posts.length; i++)
-                posts[i].PublishDate = feedService.formatDate(posts[i].PublishDate);
-            $scope.currentPosts = posts;
-        });
+
+        $scope.loadNextPage();
     };
 
     $scope.markFeedAsRead = function (feed) {
@@ -144,7 +166,8 @@ gdRead.app.controller("myFeedCtrl", ["$scope", "feedService", "$modal", "$timeou
     //Init Scope
     $scope.feedsLoading = true;
     $scope.feedsExpanded = true;
-    $scope.selectAllFeeds();
+    $scope.currentFeed = { Title: "All Feeds" };
+    $scope.currentPage = 1;
 
     //Load Feeds
     var feedRequest = feedService.loadFeeds();

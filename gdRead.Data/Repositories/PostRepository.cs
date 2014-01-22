@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Data.SqlClient;
 using System.Linq;
 using Dapper;
@@ -134,8 +135,9 @@ namespace gdRead.Data.Repositories
             } 
         }
 
-        public IEnumerable<Post> GetPostsFromFeedWithoutContent(int feedId, Guid userId)
+        public IEnumerable<Post> GetPostsFromFeedWithoutContent(int feedId, Guid userId, int page)
         {
+            int pageSize = int.Parse(ConfigurationManager.AppSettings["PageSize"]);
             using (var con = new SqlConnection(_conStr))
             {
                 con.Open();
@@ -151,11 +153,37 @@ namespace gdRead.Data.Repositories
 	                    post.FeedId = @FeedId
 	                    AND Subscription.UserId = @UserId
                     ORDER BY PublishDate DESC
-                    ", new { FeedId = feedId, UserId = userId });
+                    OFFSET @Page*@PageSize ROWS
+                    FETCH NEXT @PageSize ROWS ONLY" 
+                    , new { FeedId = feedId, UserId = userId, PageSize = pageSize, Page = page-1 });
                 con.Close();
                 return posts;
             }
         }
 
+        public IEnumerable<Post> GetPostsFromSubscriptionWithoutContent(Guid userId, int page)
+        {
+            int pageSize = int.Parse(ConfigurationManager.AppSettings["PageSize"]);
+            using (var con = new SqlConnection(_conStr))
+            {
+                con.Open();
+                var posts = con.Query<Post>(@"
+                    SELECT 
+	                    Post.Id, Post.Name, Post.Url, Post.PublishDate, Post.DateFetched, Post.FeedId
+	                    , CASE WHEN SubscriptionPostRead.Id IS NOT NULL THEN 1 ELSE 0 END AS [Read]
+                    FROM 
+	                    Post
+                        INNER JOIN Subscription ON Subscription.FeedId = Post.FeedId 
+	                    LEFT JOIN SubscriptionPostRead ON SubscriptionPostRead.SubscriptionId = Subscription.Id AND SubscriptionPostRead.PostId = Post.Id
+                    WHERE 
+	                    Subscription.UserId = @UserId
+                    ORDER BY PublishDate DESC
+                    OFFSET @Page*@PageSize ROWS
+                    FETCH NEXT @PageSize ROWS ONLY"
+                    , new {UserId = userId, PageSize = pageSize, Page = page-1 });
+                con.Close();
+                return posts;
+            }
+        }
     }
 }

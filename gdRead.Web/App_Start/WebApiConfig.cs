@@ -28,6 +28,20 @@ namespace gdRead.Web
                 defaults: new { id = RouteParameter.Optional }
             );
 
+
+            config.Routes.MapHttpRoute(
+                name: "FeedPosts",
+                routeTemplate: "api/Feed/{id}/Post/Page/{page}",
+                defaults: new {controller="Post" }
+            );
+
+            config.Routes.MapHttpRoute(
+                name: "SubscriptionPosts",
+                routeTemplate: "api/Post/Page/{page}",
+                defaults: new { controller = "Post" }
+            );
+
+
             /*
             routes.MapRoute(
                 name: "PostFromFeed",

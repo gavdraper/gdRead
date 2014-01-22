@@ -12,8 +12,7 @@
 
     <div class="row">
         <div class="col-md-2">
-            <button ng-click="openAddFeedModal()" class="linkButton">+Add Feed</button>
-            <!--<button ng-click="selectAllFeeds()">All Feeds</button>-->
+            <button ng-click="openAddFeedModal()" class="linkButton">+Add Feed</button>            
             <div id="FeedList" class="visible-sm visible-xs">
                 <select ng-change="feedSelected()" ng-model="comboSelectedFeed" ng-options="feed.Title for feed in feeds">
                     <option value="default" disabled="disabled">Feeds</option>
@@ -28,6 +27,9 @@
                 </a> Feeds
                 <hr />
                 <ul ng-show="feedsExpanded">
+                    <li class="FeedItem">
+                        <button class="FeedLink" ng-click="selectAllFeeds()">All Feeds</button>
+                    </li>
                     <li ng-repeat="feed in feeds" class="FeedItem">
                         <button ng-click="feedSelected(feed)" ng-class="{SelectedFeed:feed.selected}" ng-class="{UnReadPost:feed.UnreadCount>0}">
                             <div class="FeedTitle" ng-class="{UnReadPost:feed.UnreadCount>0}">{{feed.Title}}</div>
@@ -52,26 +54,28 @@
                         <button ng-click="markFeedAsRead(currentFeed)">Mark All As Read</button>
                     </div>
                 </div>
-                <div ng-repeat="post in currentPosts">
-                    <div ng-class-odd="'TableRow'" ng-class-even="'AlternatingTableRow'" class="PostHeader" ng-click="selectPost(post)">
-                        <div class="PostTitle">
-                            <span ng-show="post.Selected">&#9660;</span>
-                            <span ng-hide="post.Selected">&#9658;</span>
-                            <span ng-show="post.Starred">&#9733;</span>
-                            <span ng-hide="post.Starred">&#9734;</span>
-                            <span ng-class="{UnReadPost:!post.Read}">{{post.Name}}</span>
-                        </div>
 
-                        <div class="PostDate"><span class="visible-md visible-lg">{{post.PublishDate}}</span></div>
-                        <div class="Clear">&nbsp;</div>
-
-                        <div ng-hide="!post.Selected" class="TableRow PostContent">
-                            <a target="_blank" class="PostTitleLink" href="{{post.Url}}">{{post.Name}}</a>
-                            <div ng-show="post.Loading" style="width:100%;text-align:center;"><img src="@Url.Content("~/Content/ajax-loader.gif")"/></div>
-                            <div ng-bind-html="post.Content"></div>
+                <div id="is" infinite-scroll='loadNextPage()' infinite-scroll-distance='10'>
+                    <div ng-repeat="post in currentPosts">
+                        <div ng-class-odd="'TableRow'" ng-class-even="'AlternatingTableRow'" class="PostHeader" ng-click="selectPost(post)">
+                            <div class="PostTitle">
+                                <span ng-show="post.Selected">&#9660;</span>
+                                <span ng-hide="post.Selected">&#9658;</span>
+                                <span ng-show="post.Starred">&#9733;</span>
+                                <span ng-hide="post.Starred">&#9734;</span>
+                                <span ng-class="{UnReadPost:!post.Read}">{{post.Name}}</span>
+                            </div>
+                            <div class="PostDate"><span class="visible-md visible-lg">{{post.PublishDate}}</span></div>
+                            <div class="Clear">&nbsp;</div>
+                            <div ng-hide="!post.Selected" class="TableRow PostContent">
+                                <a target="_blank" class="PostTitleLink" href="{{post.Url}}">{{post.Name}}</a>
+                                <div ng-show="post.Loading" style="width:100%;text-align:center;"><img src="@Url.Content("~/Content/ajax-loader.gif")" /></div>
+                                <div ng-bind-html="post.Content"></div>
+                            </div>
                         </div>
                     </div>
                 </div>
+
             </div>
         </div>
     </div>

@@ -13,11 +13,18 @@ namespace gdRead.Web.Controllers
     {
         private readonly string _conStr = ConfigurationManager.ConnectionStrings["gdRead.Data.gdReadContext"].ConnectionString;
         // GET api/<controller>
-       public IEnumerable<Post> Get(int id)
+       public IEnumerable<Post> Get(int id, int page)
        {
            var postRepository = new PostRepository(_conStr);
            var userId = Guid.Parse(HttpContext.Current.User.Identity.GetUserId());
-           return postRepository.GetPostsFromFeedWithoutContent(id, userId);
+           return postRepository.GetPostsFromFeedWithoutContent(id, userId, page);
+       }
+
+       public IEnumerable<Post> Get(int page)
+       {
+           var postRepository = new PostRepository(_conStr);
+           var userId = Guid.Parse(HttpContext.Current.User.Identity.GetUserId());
+           return postRepository.GetPostsFromSubscriptionWithoutContent(userId, page);
        }
 
 
