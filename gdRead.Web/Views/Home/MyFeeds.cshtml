@@ -28,7 +28,7 @@
                 <hr />
                 <ul ng-show="feedsExpanded">
                     <li class="FeedItem">
-                        <button class="FeedLink" ng-click="selectAllFeeds()">All Feeds</button>
+                        <button ng-class="{SelectedFeed:currentFeed.Title == 'All Feeds' }" ng-click=" selectAllFeeds()">All Feeds</button>
                     </li>
                     <li ng-repeat="feed in feeds" class="FeedItem">
                         <button ng-click="feedSelected(feed)" ng-class="{SelectedFeed:feed.selected}" ng-class="{UnReadPost:feed.UnreadCount>0}">

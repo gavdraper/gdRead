@@ -67,6 +67,7 @@ gdRead.app.controller("myFeedCtrl", ["$scope", "feedService", "$modal", "$timeou
     };
 
     $scope.selectAllFeeds = function () {
+        console.log("Selected all feeds")
         $scope.currentFeed = { Title: "All Feeds" };
         $scope.currentPage = 1;
         $scope.currentPosts = null;
