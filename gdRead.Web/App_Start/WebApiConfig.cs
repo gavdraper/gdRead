@@ -31,13 +31,13 @@ namespace gdRead.Web
 
             config.Routes.MapHttpRoute(
                 name: "FeedPosts",
-                routeTemplate: "api/Feed/{id}/Post/Page/{page}",
+                routeTemplate: "api/Feed/{id}/Post/Page/{page}/Filter/{filter}",
                 defaults: new {controller="Post" }
             );
 
             config.Routes.MapHttpRoute(
                 name: "SubscriptionPosts",
-                routeTemplate: "api/Post/Page/{page}",
+                routeTemplate: "api/Post/Page/{page}/Filter/{filter}",
                 defaults: new { controller = "Post" }
             );
 

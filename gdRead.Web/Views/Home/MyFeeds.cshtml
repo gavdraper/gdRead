@@ -12,7 +12,13 @@
 
     <div class="row">
         <div class="col-md-2">
-            <button ng-click="openAddFeedModal()" class="linkButton">+Add Feed</button>            
+            <button ng-click="openAddFeedModal()" class="linkButton">+Add Feed</button>
+
+            <br />
+            <button ng-class="{selectedFilter:currentFilter == 'unread'}" ng-click="filter('unread')" class="linkButton">Unread</button>/
+            <button ng-class="{selectedFilter:currentFilter == 'all'}" ng-click="filter('all')" class="linkButton">All</button>
+
+
             <div id="FeedList" class="visible-sm visible-xs">
                 <select ng-change="feedSelected()" ng-model="comboSelectedFeed" ng-options="feed.Title for feed in feeds">
                     <option value="default" disabled="disabled">Feeds</option>

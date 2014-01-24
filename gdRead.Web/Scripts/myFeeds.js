@@ -6,11 +6,11 @@ gdRead.app.factory("feedService", ["$http", "$rootScope", "$timeout", function (
         loadFeeds: function () {
             return $http.get("/Api/Feed");
         },
-        loadPosts: function (feedId,page) {
-            return $http.get("/Api/Feed/" + feedId + "/Post/Page/" + page);
+        loadPosts: function (feedId, page, filter) {
+            return $http.get("/Api/Feed/" + feedId + "/Post/Page/" + page + "/Filter/" + filter);
         },
-        loadAllPosts: function (page) {
-            return $http.get("/Api/Post/Page/" + page);
+        loadAllPosts: function (page,filter) {
+            return $http.get("/Api/Post/Page/" + page + "/Filter/" + filter);
         },
         addFeed: function (url) {
             return $http.post("/Api/Feed/", { Url: url });
@@ -53,8 +53,8 @@ gdRead.app.controller("myFeedCtrl", ["$scope", "feedService", "$modal", "$timeou
     $scope.loadNextPage = function () {
         var postFeedRequest;
         if ($scope.currentFeed.Id != null)
-            postFeedRequest = feedService.loadPosts($scope.currentFeed.Id, $scope.currentPage);
-        else postFeedRequest = feedService.loadAllPosts($scope.currentPage);
+            postFeedRequest = feedService.loadPosts($scope.currentFeed.Id, $scope.currentPage, $scope.currentFilter);
+        else postFeedRequest = feedService.loadAllPosts($scope.currentPage, $scope.currentFilter);
         postFeedRequest.success(function (posts) {
             $scope.currentPage++;
             if (!$scope.currentPosts)
@@ -63,6 +63,19 @@ gdRead.app.controller("myFeedCtrl", ["$scope", "feedService", "$modal", "$timeou
                 posts[i].PublishDate = feedService.formatDate(posts[i].PublishDate);
                 $scope.currentPosts.push(posts[i]);
             }
+        });
+    };
+
+    $scope.currentFilter = "all";
+
+    $scope.filter = function(type) {
+        $scope.currentFilter = type;        
+        $scope.currentPosts = null;
+        var feedRequest = feedService.loadFeeds();
+        feedRequest.success(function (feeds) {
+            $scope.feeds = feeds;
+            $scope.feedsLoading = false;
+            $scope.selectAllFeeds();
         });
     };
 

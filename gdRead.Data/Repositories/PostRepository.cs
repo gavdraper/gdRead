@@ -136,7 +136,7 @@ namespace gdRead.Data.Repositories
             } 
         }
 
-        public IEnumerable<PostDto> GetPostDtoWithNameFromFeedWithoutContent(int feedId, Guid userId, int page)
+        public IEnumerable<PostDto> GetPostDtoWithNameFromFeedWithoutContent(int feedId, Guid userId, int page,  bool unRead = false)
         {
             int pageSize = int.Parse(ConfigurationManager.AppSettings["PageSize"]);
             using (var con = new SqlConnection(_conStr))
@@ -155,16 +155,17 @@ namespace gdRead.Data.Repositories
                     WHERE 
 	                    post.FeedId = @FeedId
 	                    AND Subscription.UserId = @UserId
+                        AND @Unread = 0 OR SubscriptionPostRead.Id IS NULL
                     ORDER BY PublishDate DESC
                     OFFSET @Page*@PageSize ROWS
                     FETCH NEXT @PageSize ROWS ONLY" 
-                    , new { FeedId = feedId, UserId = userId, PageSize = pageSize, Page = page-1 });
+                    , new { FeedId = feedId, UserId = userId, PageSize = pageSize, Page = page-1, Unread = unRead });
                 con.Close();
                 return posts;
             }
         }
 
-        public IEnumerable<PostDto> GetPostDtoFromSubscriptionWithoutContent(Guid userId, int page)
+        public IEnumerable<PostDto> GetPostDtoFromSubscriptionWithoutContent(Guid userId, int page, bool unRead = false)
         {
             int pageSize = int.Parse(ConfigurationManager.AppSettings["PageSize"]);
             using (var con = new SqlConnection(_conStr))
@@ -182,10 +183,11 @@ namespace gdRead.Data.Repositories
                         INNER JOIN Feed ON Feed.Id = Post.FeedId
                     WHERE 
 	                    Subscription.UserId = @UserId
+                        AND @Unread = 0 OR SubscriptionPostRead.Id IS NULL
                     ORDER BY PublishDate DESC
                     OFFSET @Page*@PageSize ROWS
                     FETCH NEXT @PageSize ROWS ONLY"
-                    , new {UserId = userId, PageSize = pageSize, Page = page-1 });
+                    , new {UserId = userId, PageSize = pageSize, Page = page-1, Unread = unRead });
                 con.Close();
                 return posts;
             }
