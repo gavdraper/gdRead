@@ -51,6 +51,7 @@ gdRead.app.directive('focusOn', function () {
 gdRead.app.controller("myFeedCtrl", ["$scope", "feedService", "$modal", "$timeout", "$sce",'$anchorScroll', '$location', function ($scope, feedService, $modal, $timeout, $sce, $anchorScroll, $location) {
     //Scope Methods
     $scope.loadNextPage = function () {
+        $scope.postError = "";
         var postFeedRequest;
         if ($scope.currentFeed.Id != null)
             postFeedRequest = feedService.loadPosts($scope.currentFeed.Id, $scope.currentPage, $scope.currentFilter);
@@ -63,20 +64,22 @@ gdRead.app.controller("myFeedCtrl", ["$scope", "feedService", "$modal", "$timeou
                 posts[i].PublishDate = feedService.formatDate(posts[i].PublishDate);
                 $scope.currentPosts.push(posts[i]);
             }
+            if ($scope.currentPosts.length == 0) {
+                if ($scope.currentFilter === "unread")
+                    $scope.postError = "No Unread Posts In Feed(s)";
+                else
+                    $scope.postError = "No Posts In Feed(s)";
+            }
         });
     };
 
-    $scope.currentFilter = "all";
+    $scope.currentFilter = "unread";
 
     $scope.filter = function(type) {
         $scope.currentFilter = type;        
         $scope.currentPosts = null;
-        var feedRequest = feedService.loadFeeds();
-        feedRequest.success(function (feeds) {
-            $scope.feeds = feeds;
-            $scope.feedsLoading = false;
-            $scope.selectAllFeeds();
-        });
+        $scope.currentPage = 1;
+        $scope.loadNextPage();
     };
 
     $scope.selectAllFeeds = function () {

@@ -54,11 +54,13 @@
         <div class="col-md-10" id="FeedReadingPane">
             <div class="Header"><h2>{{currentFeed.Title}}</h2></div>
             <div class="PostContainer">
+                {{postError}}
                 <div ng-show="currentPosts" id="feedToolBar">
-                    <div class="text-right">
-                        <button ng-click="unsubscribe(currentFeed)">Unsubscribe</button>
-                        <button>Refresh</button>
-                        <button ng-click="markFeedAsRead(currentFeed)">Mark All As Read</button>
+                    <div class="text-right" >
+                       &nbsp;
+                        <button ng-show="currentFeed.Title!='All Feeds'" ng-click="unsubscribe(currentFeed)">Unsubscribe</button>
+                        <button ng-show="currentFeed.Title!='All Feeds'">Refresh</button>
+                        <button ng-show="currentFeed.Title!='All Feeds'" ng-click="markFeedAsRead(currentFeed)">Mark All As Read</button>
                     </div>
                 </div>
 
