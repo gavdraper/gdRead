@@ -67,10 +67,14 @@ input[type="checkbox"].input-validation-error {
     font-weight: bold;
 }
 
+.PostContainer {
+        padding-right: 3px;
+}
+
 .PostHeader {
     cursor: pointer;
     cursor: hand;
-    padding-right: 3px;
+
 }
 
 .linkButton {
