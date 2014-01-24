@@ -36,6 +36,7 @@
                     <li class="FeedItem">
                         <button ng-class="{SelectedFeed:currentFeed.Title == 'All Feeds' }" ng-click=" selectAllFeeds()">All Feeds</button>
                     </li>
+                    <hr/>
                     <li ng-repeat="feed in feeds" class="FeedItem">
                         <button ng-click="feedSelected(feed)" ng-class="{SelectedFeed:feed.selected}" ng-class="{UnReadPost:feed.UnreadCount>0}">
                             <div class="FeedTitle" ng-class="{UnReadPost:feed.UnreadCount>0}">{{feed.Title}}</div>
