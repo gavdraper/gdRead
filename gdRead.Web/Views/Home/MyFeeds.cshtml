@@ -58,8 +58,8 @@
                 <div id="is" infinite-scroll='loadNextPage()' infinite-scroll-distance='1'>
                     <div ng-repeat="post in currentPosts">
                         <div ng-class-odd="'TableRow'" ng-class-even="'AlternatingTableRow'" class="PostContainer">
-                            <div class="PostHeader">
-                                <div class="PostIconsAndFeedTitle" ng-click="selectPost(post)">
+                            <div class="PostHeader" ng-click="selectPost(post)">
+                                <div class="PostIconsAndFeedTitle">
                                     <span ng-show="post.Selected">&#9660;</span>
                                     <span ng-hide="post.Selected">&#9658;</span>
                                     <span ng-show="post.Starred">&#9733;</span>
