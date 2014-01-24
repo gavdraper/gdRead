@@ -155,7 +155,7 @@ namespace gdRead.Data.Repositories
                     WHERE 
 	                    post.FeedId = @FeedId
 	                    AND Subscription.UserId = @UserId
-                        AND @Unread = 0 OR SubscriptionPostRead.Id IS NULL
+                        AND (@Unread = 0 OR SubscriptionPostRead.Id IS NULL)
                     ORDER BY PublishDate DESC
                     OFFSET @Page*@PageSize ROWS
                     FETCH NEXT @PageSize ROWS ONLY" 
@@ -183,7 +183,7 @@ namespace gdRead.Data.Repositories
                         INNER JOIN Feed ON Feed.Id = Post.FeedId
                     WHERE 
 	                    Subscription.UserId = @UserId
-                        AND @Unread = 0 OR SubscriptionPostRead.Id IS NULL
+                        AND (@Unread = 0 OR SubscriptionPostRead.Id IS NULL)
                     ORDER BY PublishDate DESC
                     OFFSET @Page*@PageSize ROWS
                     FETCH NEXT @PageSize ROWS ONLY"
