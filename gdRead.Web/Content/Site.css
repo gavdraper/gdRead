@@ -178,13 +178,25 @@ input[type="checkbox"].input-validation-error {
 
 .PostTitle {
     float: left;
-    width: 80%;
+    width: 60%;
     height: 19px;
     overflow: hidden;
     text-align: left;
     text-overflow: ellipsis;	
 	white-space: nowrap;
 }
+
+.PostIconsAndFeedTitle {
+    float: left;
+    width: 20%;
+    height: 19px;
+    overflow: hidden;
+    text-align: left;
+    text-overflow: ellipsis;	
+	white-space: nowrap;
+    padding-right: 25px;
+}
+
 
 
 

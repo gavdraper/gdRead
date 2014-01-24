@@ -48,6 +48,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Models\Dashboard.cs" />
+    <Compile Include="Models\Dto\PostDto.cs" />
     <Compile Include="Repositories\DashboardRepository.cs" />
     <Compile Include="ViewModels\FeedViewModel.cs" />
     <Compile Include="Models\Post.cs" />

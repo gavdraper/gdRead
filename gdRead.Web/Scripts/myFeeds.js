@@ -56,7 +56,6 @@ gdRead.app.controller("myFeedCtrl", ["$scope", "feedService", "$modal", "$timeou
             postFeedRequest = feedService.loadPosts($scope.currentFeed.Id, $scope.currentPage);
         else postFeedRequest = feedService.loadAllPosts($scope.currentPage);
         postFeedRequest.success(function (posts) {
-            console.log(posts);
             $scope.currentPage++;
             if (!$scope.currentPosts)
                 $scope.currentPosts = [];

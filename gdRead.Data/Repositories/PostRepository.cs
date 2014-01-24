@@ -6,6 +6,7 @@ using System.Linq;
 using Dapper;
 using DapperExtensions;
 using gdRead.Data.Models;
+using gdRead.Data.Models.Dto;
 
 namespace gdRead.Data.Repositories
 {
@@ -135,20 +136,22 @@ namespace gdRead.Data.Repositories
             } 
         }
 
-        public IEnumerable<Post> GetPostsFromFeedWithoutContent(int feedId, Guid userId, int page)
+        public IEnumerable<PostDto> GetPostDtoWithNameFromFeedWithoutContent(int feedId, Guid userId, int page)
         {
             int pageSize = int.Parse(ConfigurationManager.AppSettings["PageSize"]);
             using (var con = new SqlConnection(_conStr))
             {
                 con.Open();
-                var posts = con.Query<Post>(@"
+                var posts = con.Query<PostDto>(@"
                     SELECT 
 	                    Post.Id, Post.Name, Post.Url, Post.PublishDate, Post.DateFetched, Post.FeedId
-	                    , CASE WHEN SubscriptionPostRead.Id IS NOT NULL THEN 1 ELSE 0 END AS [Read]
+	                    , CASE WHEN SubscriptionPostRead.Id IS NOT NULL THEN 1 ELSE 0 END AS [Read],
+                        Feed.Title As FeedTitle
                     FROM 
 	                    Post
                         INNER JOIN Subscription ON Subscription.FeedId = Post.FeedId 
 	                    LEFT JOIN SubscriptionPostRead ON SubscriptionPostRead.SubscriptionId = Subscription.Id AND SubscriptionPostRead.PostId = Post.Id
+                        INNER JOIN Feed ON Feed.Id = Post.FeedId
                     WHERE 
 	                    post.FeedId = @FeedId
 	                    AND Subscription.UserId = @UserId
@@ -161,20 +164,22 @@ namespace gdRead.Data.Repositories
             }
         }
 
-        public IEnumerable<Post> GetPostsFromSubscriptionWithoutContent(Guid userId, int page)
+        public IEnumerable<PostDto> GetPostDtoFromSubscriptionWithoutContent(Guid userId, int page)
         {
             int pageSize = int.Parse(ConfigurationManager.AppSettings["PageSize"]);
             using (var con = new SqlConnection(_conStr))
             {
                 con.Open();
-                var posts = con.Query<Post>(@"
+                var posts = con.Query<PostDto>(@"
                     SELECT 
 	                    Post.Id, Post.Name, Post.Url, Post.PublishDate, Post.DateFetched, Post.FeedId
 	                    , CASE WHEN SubscriptionPostRead.Id IS NOT NULL THEN 1 ELSE 0 END AS [Read]
+                        ,Feed.Title As FeedTitle
                     FROM 
 	                    Post
                         INNER JOIN Subscription ON Subscription.FeedId = Post.FeedId 
 	                    LEFT JOIN SubscriptionPostRead ON SubscriptionPostRead.SubscriptionId = Subscription.Id AND SubscriptionPostRead.PostId = Post.Id
+                        INNER JOIN Feed ON Feed.Id = Post.FeedId
                     WHERE 
 	                    Subscription.UserId = @UserId
                     ORDER BY PublishDate DESC

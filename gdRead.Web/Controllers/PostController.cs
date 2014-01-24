@@ -17,14 +17,14 @@ namespace gdRead.Web.Controllers
        {
            var postRepository = new PostRepository(_conStr);
            var userId = Guid.Parse(HttpContext.Current.User.Identity.GetUserId());
-           return postRepository.GetPostsFromFeedWithoutContent(id, userId, page);
+           return postRepository.GetPostDtoWithNameFromFeedWithoutContent(id, userId, page);
        }
 
        public IEnumerable<Post> Get(int page)
        {
            var postRepository = new PostRepository(_conStr);
            var userId = Guid.Parse(HttpContext.Current.User.Identity.GetUserId());
-           return postRepository.GetPostsFromSubscriptionWithoutContent(userId, page);
+           return postRepository.GetPostDtoFromSubscriptionWithoutContent(userId, page);
        }
 
 
