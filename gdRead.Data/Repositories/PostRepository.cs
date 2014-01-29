@@ -104,10 +104,12 @@ namespace gdRead.Data.Repositories
 					SELECT 
 						Post.*
 						, CASE WHEN SubscriptionPostRead.Id IS NOT NULL THEN 1 ELSE 0 END AS [Read]
+                        , CASE WHEN StaredPost.PostId IS NOT NULL THEN 1 ELSE 0 END AS [Starred]
 					FROM 
 						Post
 						INNER JOIN Subscription ON Subscription.FeedId = Post.FeedId 
 						LEFT JOIN SubscriptionPostRead ON SubscriptionPostRead.SubscriptionId = Subscription.Id AND SubscriptionPostRead.PostId = Post.Id
+                        LEFT JOIN StaredPost ON StaredPost.UserId = Subscription.UserId AND StaredPost.PostId = Post.Id
 					WHERE 
 						post.FeedId = @FeedId
 						AND Subscription.UserId = @UserId
@@ -145,12 +147,14 @@ namespace gdRead.Data.Repositories
 				var posts = con.Query<PostDto>(@"
 					SELECT 
 						Post.Id, Post.Name, Post.Url, Post.PublishDate, Post.DateFetched, Post.FeedId
-						, CASE WHEN SubscriptionPostRead.Id IS NOT NULL THEN 1 ELSE 0 END AS [Read],
+						, CASE WHEN SubscriptionPostRead.Id IS NOT NULL THEN 1 ELSE 0 END AS [Read]
+                        , CASE WHEN StaredPost.PostId IS NOT NULL THEN 1 ELSE 0 END AS [Starred],
 						Feed.Title As FeedTitle
 					FROM 
 						Post
 						INNER JOIN Subscription ON Subscription.FeedId = Post.FeedId 
 						LEFT JOIN SubscriptionPostRead ON SubscriptionPostRead.SubscriptionId = Subscription.Id AND SubscriptionPostRead.PostId = Post.Id
+                        LEFT JOIN StaredPost ON StaredPost.UserId = Subscription.UserId AND StaredPost.PostId = Post.Id
 						INNER JOIN Feed ON Feed.Id = Post.FeedId
 					WHERE 
 						post.FeedId = @FeedId
@@ -158,8 +162,8 @@ namespace gdRead.Data.Repositories
 						AND (@Unread = 0 OR SubscriptionPostRead.Id IS NULL)
 					ORDER BY PublishDate DESC
 					OFFSET @Page*@PageSize ROWS
-					FETCH NEXT @PageSize ROWS ONLY" 
-					, new { FeedId = feedId, UserId = userId, PageSize = pageSize, Page = page-1, Unread = unRead });
+					FETCH NEXT @PageSize ROWS ONLY"
+                    , new { FeedId = feedId, UserId = userId, PageSize = pageSize, Page = page-1, Unread = unRead });
 				con.Close();
 				return posts;
 			}
@@ -175,11 +179,13 @@ namespace gdRead.Data.Repositories
 					SELECT 
 						Post.Id, Post.Name, Post.Url, Post.PublishDate, Post.DateFetched, Post.FeedId
 						, CASE WHEN SubscriptionPostRead.Id IS NOT NULL THEN 1 ELSE 0 END AS [Read]
+                        , CASE WHEN StaredPost.PostId IS NOT NULL THEN 1 ELSE 0 END AS [Starred]
 						,Feed.Title As FeedTitle
 					FROM 
 						Post
 						INNER JOIN Subscription ON Subscription.FeedId = Post.FeedId 
 						LEFT JOIN SubscriptionPostRead ON SubscriptionPostRead.SubscriptionId = Subscription.Id AND SubscriptionPostRead.PostId = Post.Id
+                        LEFT JOIN StaredPost ON StaredPost.UserId = Subscription.UserId AND StaredPost.PostId = Post.Id
 						INNER JOIN Feed ON Feed.Id = Post.FeedId
 					WHERE 
 						Subscription.UserId = @UserId
@@ -187,7 +193,7 @@ namespace gdRead.Data.Repositories
 					ORDER BY PublishDate DESC
 					OFFSET @Page*@PageSize ROWS
 					FETCH NEXT @PageSize ROWS ONLY"
-					, new {UserId = userId, PageSize = pageSize, Page = page-1, Unread = unRead });
+                    , new {UserId = userId, PageSize = pageSize, Page = page-1, Unread = unRead });
 				con.Close();
 				return posts;
 			}
@@ -234,6 +240,7 @@ namespace gdRead.Data.Repositories
 						Post.Id, Post.Name, Post.Url, Post.PublishDate, Post.DateFetched, Post.FeedId
 						,0 AS [Read]
 						,Feed.Title As FeedTitle
+                        1
 					FROM 
 						Post
 						INNER JOIN StaredPost ON StaredPost.PostId = Post.Id

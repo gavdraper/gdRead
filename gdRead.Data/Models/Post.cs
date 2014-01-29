@@ -11,6 +11,7 @@ namespace gdRead.Data.Models
         public string  Url { get; set; }
         public string Summary { get; set; }
         public string Content { get; set; }
+        public bool Starred { get; set; }
         public DateTime PublishDate { get; set; }
         public bool Read { get; set; }        
         public DateTime DateFetched { get;set; }
