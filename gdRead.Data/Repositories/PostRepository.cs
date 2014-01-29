@@ -11,184 +11,239 @@ using gdRead.Data.Repositories.Interfaces;
 
 namespace gdRead.Data.Repositories
 {
-    public class PostRepository : IPostRepository
-    {
-        private readonly string _conStr;
+	public class PostRepository : IPostRepository
+	{
+		private readonly string _conStr;
 
-        public PostRepository()
-        {
-            _conStr = ConfigurationManager.ConnectionStrings["gdRead.Data.gdReadContext"].ConnectionString;
-        }
+		public PostRepository()
+		{
+			_conStr = ConfigurationManager.ConnectionStrings["gdRead.Data.gdReadContext"].ConnectionString;
+		}
 
-        public DateTime GetLastPostDateInFeed(int feedId)
-        {
-            using (var con = new SqlConnection(_conStr))
-            {
-                con.Open();
-                var lastPostDate = con.Query<DateTime?>("SELECT TOP 1 PublishDate FROM Post WHERE FeedId = @FeedId ORDER BY PublishDate DESC", new { FeedId =  feedId}).FirstOrDefault() ?? DateTime.MinValue;
-                con.Close();
-                return lastPostDate;
-            }
-        }
+		public DateTime GetLastPostDateInFeed(int feedId)
+		{
+			using (var con = new SqlConnection(_conStr))
+			{
+				con.Open();
+				var lastPostDate = con.Query<DateTime?>("SELECT TOP 1 PublishDate FROM Post WHERE FeedId = @FeedId ORDER BY PublishDate DESC", new { FeedId =  feedId}).FirstOrDefault() ?? DateTime.MinValue;
+				con.Close();
+				return lastPostDate;
+			}
+		}
 
-        public void SetPostAsRead(int postId, Guid userId)
-        {
-            using (var con = new SqlConnection(_conStr))
-            {
-                con.Open();
-                con.Query<DateTime?>(
-                    @"
-                        DECLARE @FeedId INT 
-                        SELECT @FeedId = FeedId FROM Post WHERE Id = @postId
-                        DECLARE @SubscriptionId INT
-                        SELECT @SubscriptionId = Id FROM Subscription WHERE UserId = @UserId AND FeedId = @FeedId
-                        IF NOT EXISTS(SELECT Id FROM SubscriptionPostRead WHERE SubscriptionId = @SubscriptionId AND PostId = @PostId)
-	                        BEGIN
-		                    INSERT INTO SubscriptionPostRead(SubScriptionId,PostId)
-		                    VALUES(@SubscriptionId,@PostId)
-	                        END
-                    "
-                    ,
-                    new {PostId = postId, UserId = userId});
-                con.Close();
-            }
-        }
-        
-        public void SetPostsInFeedAsRead(int feedId, Guid userId)
-        {
-            using (var con = new SqlConnection(_conStr))
-            {
-                con.Open();
-                con.Query<DateTime?>(
-                    @"
-                    DECLARE @SubscriptionId INT
-                    SELECT @SubscriptionId = Id FROM Subscription WHERE UserId = @UserId AND FeedId = @FeedId
+		public void SetPostAsRead(int postId, Guid userId)
+		{
+			using (var con = new SqlConnection(_conStr))
+			{
+				con.Open();
+				con.Query<DateTime?>(
+					@"
+						DECLARE @FeedId INT 
+						SELECT @FeedId = FeedId FROM Post WHERE Id = @postId
+						DECLARE @SubscriptionId INT
+						SELECT @SubscriptionId = Id FROM Subscription WHERE UserId = @UserId AND FeedId = @FeedId
+						IF NOT EXISTS(SELECT Id FROM SubscriptionPostRead WHERE SubscriptionId = @SubscriptionId AND PostId = @PostId)
+							BEGIN
+							INSERT INTO SubscriptionPostRead(SubScriptionId,PostId)
+							VALUES(@SubscriptionId,@PostId)
+							END
+					"
+					,
+					new {PostId = postId, UserId = userId});
+				con.Close();
+			}
+		}
+		
+		public void SetPostsInFeedAsRead(int feedId, Guid userId)
+		{
+			using (var con = new SqlConnection(_conStr))
+			{
+				con.Open();
+				con.Query<DateTime?>(
+					@"
+					DECLARE @SubscriptionId INT
+					SELECT @SubscriptionId = Id FROM Subscription WHERE UserId = @UserId AND FeedId = @FeedId
 
-                    INSERT INTO SubscriptionPostRead
-                    SELECT
-	                    @SubscriptionId, Post.Id
-                    FROM
-	                    Feed
-	                    INNER JOIN SubScription ON Subscription.FeeDId = Feed.Id
-	                    INNER JOIN Post ON Post.FeedId = Feed.Id 
-	                    LEFT JOIN SubscriptionPostRead sr ON sr.postId = post.Id AND sr.SubscriptionId = Subscription.Id
-                    WHERE
-	                    Subscription.UserId = @UserId AND
+					INSERT INTO SubscriptionPostRead
+					SELECT
+						@SubscriptionId, Post.Id
+					FROM
+						Feed
+						INNER JOIN SubScription ON Subscription.FeeDId = Feed.Id
+						INNER JOIN Post ON Post.FeedId = Feed.Id 
+						LEFT JOIN SubscriptionPostRead sr ON sr.postId = post.Id AND sr.SubscriptionId = Subscription.Id
+					WHERE
+						Subscription.UserId = @UserId AND
 	
-	                    Feed.Id = @FeedId AND
-	                    sr.ID IS NULL
-                    "
-                    ,
-                    new { FeedId = feedId, UserId = userId });
-                con.Close();
-            }
-        }
+						Feed.Id = @FeedId AND
+						sr.ID IS NULL
+					"
+					,
+					new { FeedId = feedId, UserId = userId });
+				con.Close();
+			}
+		}
+
+		public Post AddPost(Post post)
+		{
+			using (var con = new SqlConnection(_conStr))
+			{
+				con.Open();
+				post.Id = con.Insert(post);
+				con.Close();
+				return post;
+			}
+		}
+
+		public IEnumerable<Post> GetPostsFromFeed(int feedId, Guid userId)
+		{
+			using (var con = new SqlConnection(_conStr))
+			{
+				con.Open();
+				var posts = con.Query<Post>(@"
+					SELECT 
+						Post.*
+						, CASE WHEN SubscriptionPostRead.Id IS NOT NULL THEN 1 ELSE 0 END AS [Read]
+					FROM 
+						Post
+						INNER JOIN Subscription ON Subscription.FeedId = Post.FeedId 
+						LEFT JOIN SubscriptionPostRead ON SubscriptionPostRead.SubscriptionId = Subscription.Id AND SubscriptionPostRead.PostId = Post.Id
+					WHERE 
+						post.FeedId = @FeedId
+						AND Subscription.UserId = @UserId
+					ORDER BY PublishDate DESC
+					", new {FeedId = feedId, UserId = userId});
+				con.Close();
+				return posts;
+			}
+		}
+
+		public string GetPostContent(int postId)
+		{
+			using (var con = new SqlConnection(_conStr))
+			{
+				con.Open();
+				var post = con.Query<string>(@"
+					SELECT 
+						Post.Content
+					FROM 
+						Post                       
+					WHERE 
+						post.Id = @PostId
+					", new { PostId = postId }).FirstOrDefault();
+				con.Close();
+				return post;
+			} 
+		}
+
+		public IEnumerable<PostDto> GetPostDtoWithNameFromFeedWithoutContent(int feedId, Guid userId, int page,  bool unRead = false)
+		{
+			int pageSize = int.Parse(ConfigurationManager.AppSettings["PageSize"]);
+			using (var con = new SqlConnection(_conStr))
+			{
+				con.Open();
+				var posts = con.Query<PostDto>(@"
+					SELECT 
+						Post.Id, Post.Name, Post.Url, Post.PublishDate, Post.DateFetched, Post.FeedId
+						, CASE WHEN SubscriptionPostRead.Id IS NOT NULL THEN 1 ELSE 0 END AS [Read],
+						Feed.Title As FeedTitle
+					FROM 
+						Post
+						INNER JOIN Subscription ON Subscription.FeedId = Post.FeedId 
+						LEFT JOIN SubscriptionPostRead ON SubscriptionPostRead.SubscriptionId = Subscription.Id AND SubscriptionPostRead.PostId = Post.Id
+						INNER JOIN Feed ON Feed.Id = Post.FeedId
+					WHERE 
+						post.FeedId = @FeedId
+						AND Subscription.UserId = @UserId
+						AND (@Unread = 0 OR SubscriptionPostRead.Id IS NULL)
+					ORDER BY PublishDate DESC
+					OFFSET @Page*@PageSize ROWS
+					FETCH NEXT @PageSize ROWS ONLY" 
+					, new { FeedId = feedId, UserId = userId, PageSize = pageSize, Page = page-1, Unread = unRead });
+				con.Close();
+				return posts;
+			}
+		}
+
+		public IEnumerable<PostDto> GetPostDtoFromSubscriptionWithoutContent(Guid userId, int page, bool unRead = false)
+		{
+			int pageSize = int.Parse(ConfigurationManager.AppSettings["PageSize"]);
+			using (var con = new SqlConnection(_conStr))
+			{
+				con.Open();
+				var posts = con.Query<PostDto>(@"
+					SELECT 
+						Post.Id, Post.Name, Post.Url, Post.PublishDate, Post.DateFetched, Post.FeedId
+						, CASE WHEN SubscriptionPostRead.Id IS NOT NULL THEN 1 ELSE 0 END AS [Read]
+						,Feed.Title As FeedTitle
+					FROM 
+						Post
+						INNER JOIN Subscription ON Subscription.FeedId = Post.FeedId 
+						LEFT JOIN SubscriptionPostRead ON SubscriptionPostRead.SubscriptionId = Subscription.Id AND SubscriptionPostRead.PostId = Post.Id
+						INNER JOIN Feed ON Feed.Id = Post.FeedId
+					WHERE 
+						Subscription.UserId = @UserId
+						AND (@Unread = 0 OR SubscriptionPostRead.Id IS NULL)
+					ORDER BY PublishDate DESC
+					OFFSET @Page*@PageSize ROWS
+					FETCH NEXT @PageSize ROWS ONLY"
+					, new {UserId = userId, PageSize = pageSize, Page = page-1, Unread = unRead });
+				con.Close();
+				return posts;
+			}
+		}
+
+		public void StarPost(int postId, Guid userId)
+		{
+			using (var con = new SqlConnection(_conStr))
+			{
+				con.Open();
+				con.Execute(
+					@"
+						IF NOT EXISTS(SELECT UserId FROM StaredPost WHERE UserId = @UserId AND PostId = @PostId)
+							BEGIN
+							INSERT INTO StaredPost(UserId,PostId)
+							VALUES(@UserId,@PostId)
+							END
+					",
+					new { PostId = postId, UserId = userId });
+				con.Close();
+			}
+		}
+
+		public void UnStarPost(int postId, Guid userId)
+		{
+			using (var con = new SqlConnection(_conStr))
+			{
+				con.Open();
+                con.Execute(@"DELETE FROM StaredPost WHERE UserId = @UserId AND PostID = @PostId",
+					new { PostId = postId, UserId = userId });
+				con.Close();
+			}
+		}
 
 
-        public Post AddPost(Post post)
-        {
-            using (var con = new SqlConnection(_conStr))
-            {
-                con.Open();
-                post.Id = con.Insert(post);
-                con.Close();
-                return post;
-            }
-        }
-
-        public IEnumerable<Post> GetPostsFromFeed(int feedId, Guid userId)
-        {
-            using (var con = new SqlConnection(_conStr))
-            {
-                con.Open();
-                var posts = con.Query<Post>(@"
-                    SELECT 
-	                    Post.*
-	                    , CASE WHEN SubscriptionPostRead.Id IS NOT NULL THEN 1 ELSE 0 END AS [Read]
-                    FROM 
-	                    Post
-                        INNER JOIN Subscription ON Subscription.FeedId = Post.FeedId 
-	                    LEFT JOIN SubscriptionPostRead ON SubscriptionPostRead.SubscriptionId = Subscription.Id AND SubscriptionPostRead.PostId = Post.Id
-                    WHERE 
-	                    post.FeedId = @FeedId
-	                    AND Subscription.UserId = @UserId
-                    ORDER BY PublishDate DESC
-                    ", new {FeedId = feedId, UserId = userId});
-                con.Close();
-                return posts;
-            }
-        }
-
-        public string GetPostContent(int postId)
-        {
-            using (var con = new SqlConnection(_conStr))
-            {
-                con.Open();
-                var post = con.Query<string>(@"
-                    SELECT 
-	                    Post.Content
-                    FROM 
-	                    Post                       
-                    WHERE 
-	                    post.Id = @PostId
-                    ", new { PostId = postId }).FirstOrDefault();
-                con.Close();
-                return post;
-            } 
-        }
-
-        public IEnumerable<PostDto> GetPostDtoWithNameFromFeedWithoutContent(int feedId, Guid userId, int page,  bool unRead = false)
+        public IEnumerable<Post> GetStaredPostsWithoutContent(Guid userId, int page)
         {
             int pageSize = int.Parse(ConfigurationManager.AppSettings["PageSize"]);
             using (var con = new SqlConnection(_conStr))
             {
                 con.Open();
                 var posts = con.Query<PostDto>(@"
-                    SELECT 
-	                    Post.Id, Post.Name, Post.Url, Post.PublishDate, Post.DateFetched, Post.FeedId
-	                    , CASE WHEN SubscriptionPostRead.Id IS NOT NULL THEN 1 ELSE 0 END AS [Read],
-                        Feed.Title As FeedTitle
-                    FROM 
-	                    Post
-                        INNER JOIN Subscription ON Subscription.FeedId = Post.FeedId 
-	                    LEFT JOIN SubscriptionPostRead ON SubscriptionPostRead.SubscriptionId = Subscription.Id AND SubscriptionPostRead.PostId = Post.Id
-                        INNER JOIN Feed ON Feed.Id = Post.FeedId
-                    WHERE 
-	                    post.FeedId = @FeedId
-	                    AND Subscription.UserId = @UserId
-                        AND (@Unread = 0 OR SubscriptionPostRead.Id IS NULL)
-                    ORDER BY PublishDate DESC
-                    OFFSET @Page*@PageSize ROWS
-                    FETCH NEXT @PageSize ROWS ONLY" 
-                    , new { FeedId = feedId, UserId = userId, PageSize = pageSize, Page = page-1, Unread = unRead });
-                con.Close();
-                return posts;
-            }
-        }
-
-        public IEnumerable<PostDto> GetPostDtoFromSubscriptionWithoutContent(Guid userId, int page, bool unRead = false)
-        {
-            int pageSize = int.Parse(ConfigurationManager.AppSettings["PageSize"]);
-            using (var con = new SqlConnection(_conStr))
-            {
-                con.Open();
-                var posts = con.Query<PostDto>(@"
-                    SELECT 
-	                    Post.Id, Post.Name, Post.Url, Post.PublishDate, Post.DateFetched, Post.FeedId
-	                    , CASE WHEN SubscriptionPostRead.Id IS NOT NULL THEN 1 ELSE 0 END AS [Read]
-                        ,Feed.Title As FeedTitle
-                    FROM 
-	                    Post
-                        INNER JOIN Subscription ON Subscription.FeedId = Post.FeedId 
-	                    LEFT JOIN SubscriptionPostRead ON SubscriptionPostRead.SubscriptionId = Subscription.Id AND SubscriptionPostRead.PostId = Post.Id
-                        INNER JOIN Feed ON Feed.Id = Post.FeedId
-                    WHERE 
-	                    Subscription.UserId = @UserId
-                        AND (@Unread = 0 OR SubscriptionPostRead.Id IS NULL)
-                    ORDER BY PublishDate DESC
-                    OFFSET @Page*@PageSize ROWS
-                    FETCH NEXT @PageSize ROWS ONLY"
-                    , new {UserId = userId, PageSize = pageSize, Page = page-1, Unread = unRead });
+					SELECT 
+						Post.Id, Post.Name, Post.Url, Post.PublishDate, Post.DateFetched, Post.FeedId
+						,0 AS [Read]
+						,Feed.Title As FeedTitle
+					FROM 
+						Post
+						INNER JOIN StaredPost ON StaredPost.PostId = Post.Id
+						INNER JOIN Feed ON Feed.Id = Post.FeedId
+					WHERE 
+						StaredPost.UserId = @UserId						
+					ORDER BY PublishDate DESC
+					OFFSET @Page*@PageSize ROWS
+					FETCH NEXT @PageSize ROWS ONLY"
+                    , new { UserId = userId, PageSize = pageSize, Page = page - 1 });
                 con.Close();
                 return posts;
             }

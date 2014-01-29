@@ -9,7 +9,7 @@ gdRead.app.factory("feedService", ["$http", "$rootScope", "$timeout", function (
         loadPosts: function (feedId, page, filter) {
             return $http.get("/Api/Feed/" + feedId + "/Post/Page/" + page + "/Filter/" + filter);
         },
-        loadAllPosts: function (page,filter) {
+        loadAllPosts: function (page, filter) {
             return $http.get("/Api/Post/Page/" + page + "/Filter/" + filter);
         },
         addFeed: function (url) {
@@ -30,6 +30,18 @@ gdRead.app.factory("feedService", ["$http", "$rootScope", "$timeout", function (
         unsubscribe: function (feed) {
             return $http.delete("/Api/Feed/" + feed.Id);
         },
+
+        getStaredPosts: function (page) {
+            return $http.post("/api/StaredPost/" + page);
+        },
+        starPost: function (postId) {
+            return $http.post("/api/StaredPost/" + postId);
+        },
+        unStarPost: function (postId) {
+            return $http.delete("/api/StaredPost/" + postId);
+        },
+
+
         focus: function (name) {
             $timeout(function () {
                 $rootScope.$broadcast('focusOn', name);
@@ -48,7 +60,7 @@ gdRead.app.directive('focusOn', function () {
     };
 });
 
-gdRead.app.controller("myFeedCtrl", ["$scope", "feedService", "$modal", "$timeout", "$sce",'$anchorScroll', '$location', function ($scope, feedService, $modal, $timeout, $sce, $anchorScroll, $location) {
+gdRead.app.controller("myFeedCtrl", ["$scope", "feedService", "$modal", "$timeout", "$sce", '$anchorScroll', '$location', function ($scope, feedService, $modal, $timeout, $sce, $anchorScroll, $location) {
     //Scope Methods
     $scope.loadNextPage = function () {
         $scope.postError = "";
@@ -75,8 +87,8 @@ gdRead.app.controller("myFeedCtrl", ["$scope", "feedService", "$modal", "$timeou
 
     $scope.currentFilter = "unread";
 
-    $scope.filter = function(type) {
-        $scope.currentFilter = type;        
+    $scope.filter = function (type) {
+        $scope.currentFilter = type;
         $scope.currentPosts = null;
         $scope.currentPage = 1;
         $scope.loadNextPage();
@@ -129,10 +141,23 @@ gdRead.app.controller("myFeedCtrl", ["$scope", "feedService", "$modal", "$timeou
         });
     };
 
+    $scope.starPost = function(post) {
+        var starPost = feedService.starPost(post.Id);
+        starPost.success(function() {
+            post.Starred = true;
+        });
+    };
+
+    $scope.unStarPost = function (post) {
+        var starPost = feedService.unStarPost(post.Id);
+        starPost.success(function () {
+            post.Starred =false;
+        });
+    };
+
     $scope.selectPost = function (post) {
         if (!post.Selected) {
             post.Selected = true;
-
 
             if (!post.Content || post.Content === "") {
                 var loadPostContent = feedService.loadPostContent(post.Id);

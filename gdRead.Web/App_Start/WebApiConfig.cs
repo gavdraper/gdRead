@@ -16,6 +16,12 @@ namespace gdRead.Web
             config.MapHttpAttributeRoutes();
 
             config.Routes.MapHttpRoute(
+                name: "StaredPosts",
+                routeTemplate: "api/Post/Stared/{id}",
+                defaults: new { controller = "StaredPostController", id = RouteParameter.Optional }
+            );
+
+            config.Routes.MapHttpRoute(
                 name: "PostNoContent",
                 routeTemplate: "api/{controller}/ContentOnly/{postId}/{contentOnly}",
                 defaults: new { contentOnly = true }
@@ -38,6 +44,8 @@ namespace gdRead.Web
                 routeTemplate: "api/Post/Page/{page}/Filter/{filter}",
                 defaults: new { controller = "Post" }
             );
+
+  
 
             var builder = new ContainerBuilder();
             builder.RegisterApiControllers(Assembly.GetExecutingAssembly());

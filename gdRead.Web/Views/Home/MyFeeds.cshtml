@@ -67,19 +67,19 @@
                 <div id="is" infinite-scroll='loadNextPage()' infinite-scroll-distance='1'>
                     <div ng-repeat="post in currentPosts">
                         <div ng-class-odd="'TableRow'" ng-class-even="'AlternatingTableRow'" class="PostContainer">
-                            <div class="PostHeader" ng-click="selectPost(post)">
+                            <div class="PostHeader">
                                 <div class="PostIconsAndFeedTitle">
-                                    <span ng-show="post.Selected">&#9660;</span>
-                                    <span ng-hide="post.Selected">&#9658;</span>
-                                    <span ng-show="post.Starred">&#9733;</span>
-                                    <span ng-hide="post.Starred">&#9734;</span>
-                                    <span ng-class="{UnReadPost:!post.Read}">{{post.FeedTitle}}</span>
+                                    <span ng-show="post.Selected" ng-click="selectPost(post)">&#9660;</span>
+                                    <span ng-hide="post.Selected" ng-click="selectPost(post)">&#9658;</span>
+                                    <span ng-show="post.Starred" ng-click="unStarPost(post)">&#9733;</span>
+                                    <span ng-hide="post.Starred" ng-click="starPost(post)">&#9734;</span>
+                                    <span ng-class="{UnReadPost:!post.Read}" ng-click="selectPost(post)">{{post.FeedTitle}}</span>
                                 </div>
-                                <div class="PostTitle">
+                                <div class="PostTitle" ng-click="selectPost(post)">
                                     <span ng-class="{UnReadPost:!post.Read}">{{post.Name}}</span>
                                 </div>
 
-                                <div class="PostDate"><span class="visible-md visible-lg">{{post.PublishDate}}</span></div>
+                                <div class="PostDate" ng-click="selectPost(post)"><span class="visible-md visible-lg">{{post.PublishDate}}</span></div>
                                 <div class="Clear">&nbsp;</div>
                             </div>
                             <div ng-hide="!post.Selected" class="TableRow PostContent">

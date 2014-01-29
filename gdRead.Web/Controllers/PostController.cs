@@ -7,7 +7,7 @@ using gdRead.Data.Repositories.Interfaces;
 using Microsoft.AspNet.Identity;
 
 namespace gdRead.Web.Controllers
-{     
+{
     public class PostController : ApiController
     {
         private IPostRepository postRepository;
@@ -18,19 +18,19 @@ namespace gdRead.Web.Controllers
         }
 
         // GET api/<controller>
-       public IEnumerable<Post> Get(int id, int page, string filter)
+        public IEnumerable<Post> Get(int id, int page, string filter)
         {
             var filterByUnread = filter == "unread";
-           var userId = Guid.Parse(HttpContext.Current.User.Identity.GetUserId());
-           return postRepository.GetPostDtoWithNameFromFeedWithoutContent(id, userId, page, filterByUnread);
-       }
+            var userId = Guid.Parse(HttpContext.Current.User.Identity.GetUserId());
+            return postRepository.GetPostDtoWithNameFromFeedWithoutContent(id, userId, page, filterByUnread);
+        }
 
-       public IEnumerable<Post> Get(int page, string filter)
-       {
-           var filterByUnread = filter == "unread";
-           var userId = Guid.Parse(HttpContext.Current.User.Identity.GetUserId());
-           return postRepository.GetPostDtoFromSubscriptionWithoutContent(userId, page, filterByUnread);
-       }
+        public IEnumerable<Post> Get(int page, string filter)
+        {
+            var filterByUnread = filter == "unread";
+            var userId = Guid.Parse(HttpContext.Current.User.Identity.GetUserId());
+            return postRepository.GetPostDtoFromSubscriptionWithoutContent(userId, page, filterByUnread);
+        }
 
         public class PostContent
         {
@@ -38,14 +38,14 @@ namespace gdRead.Web.Controllers
             public string Content { get; set; }
         }
 
-       public PostContent Get(int postId, bool contentOnly)
-       {
-           return new PostContent()
-           {
-               PostId = postId,
-               Content = postRepository.GetPostContent(postId)
-           };
-       }
+        public PostContent Get(int postId, bool contentOnly)
+        {
+            return new PostContent()
+            {
+                PostId = postId,
+                Content = postRepository.GetPostContent(postId)
+            };
+        }
 
     }
 }
