@@ -1,27 +1,27 @@
 ﻿using System;
-using System.Configuration;
 using System.Web;
 using System.Web.Http;
 using gdRead.Data.Models;
-using gdRead.Data.Repositories;
+using gdRead.Data.Repositories.Interfaces;
 using Microsoft.AspNet.Identity;
 
 namespace gdRead.Web.Controllers
 {
     public class FeedReadController : ApiController
     {
-        private readonly string _conStr =
-        ConfigurationManager.ConnectionStrings["gdRead.Data.gdReadContext"].ConnectionString;
+        private readonly IPostRepository _postRepository;
 
-        [Authorize]
+        public FeedReadController(IPostRepository postRepository)
+        {
+            this._postRepository = postRepository;
+        }
 
 
         [Authorize]
         public void Post([FromBody] Feed feed)
         {
-            var postRepository = new PostRepository(_conStr);
             var userId = Guid.Parse(HttpContext.Current.User.Identity.GetUserId());
-            postRepository.SetPostsInFeedAsRead(feed.Id, userId);
+            _postRepository.SetPostsInFeedAsRead(feed.Id, userId);
         }
     }
 }

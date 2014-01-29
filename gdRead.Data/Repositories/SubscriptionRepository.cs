@@ -1,18 +1,20 @@
 ﻿using System;
+using System.Configuration;
 using System.Data.SqlClient;
 using System.Linq;
 using Dapper;
 using DapperExtensions;
 using gdRead.Data.Models;
+using gdRead.Data.Repositories.Interfaces;
 
 namespace gdRead.Data.Repositories
 {
-    public class SubscriptionRepository
+    public class SubscriptionRepository : ISubscriptionRepository
     {
         private readonly string _conStr;
-        public SubscriptionRepository(string conStr)
+        public SubscriptionRepository()
         {
-            _conStr = conStr;
+            _conStr = ConfigurationManager.ConnectionStrings["gdRead.Data.gdReadContext"].ConnectionString;
         }
 
         public Subscription AddSubscription(Subscription subscription)

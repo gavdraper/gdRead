@@ -1,7 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Reflection;
 using System.Web.Http;
+using System.Web.Mvc;
+using Autofac;
+using Autofac.Integration.Mvc;
+using Autofac.Integration.WebApi;
+using gdRead.Data.Repositories;
+using gdRead.Data.Repositories.Interfaces;
 
 namespace gdRead.Web
 {
@@ -9,11 +13,7 @@ namespace gdRead.Web
     {
         public static void Register(HttpConfiguration config)
         {
-            // Web API configuration and services
-
-            // Web API routes
             config.MapHttpAttributeRoutes();
-
 
             config.Routes.MapHttpRoute(
                 name: "PostNoContent",
@@ -21,18 +21,16 @@ namespace gdRead.Web
                 defaults: new { contentOnly = true }
             );
 
-
             config.Routes.MapHttpRoute(
                 name: "DefaultApi",
                 routeTemplate: "api/{controller}/{id}",
                 defaults: new { id = RouteParameter.Optional }
             );
 
-
             config.Routes.MapHttpRoute(
                 name: "FeedPosts",
                 routeTemplate: "api/Feed/{id}/Post/Page/{page}/Filter/{filter}",
-                defaults: new {controller="Post" }
+                defaults: new { controller = "Post" }
             );
 
             config.Routes.MapHttpRoute(
@@ -41,14 +39,16 @@ namespace gdRead.Web
                 defaults: new { controller = "Post" }
             );
 
-
-            /*
-            routes.MapRoute(
-                name: "PostFromFeed",
-                url: "{controller}/{action}/FromFeed/{feedId}",
-                defaults: new { controller = "Post", action = "Index" }
-            );
-*/
+            var builder = new ContainerBuilder();
+            builder.RegisterApiControllers(Assembly.GetExecutingAssembly());
+            builder.RegisterControllers(Assembly.GetExecutingAssembly());
+            builder.Register(x => new DashboardRepository()).As<IDashboardRepository>().InstancePerApiRequest();
+            builder.Register(x => new SubscriptionRepository()).As<ISubscriptionRepository>().InstancePerApiRequest();
+            builder.Register(x => new PostRepository()).As<IPostRepository>().InstancePerApiRequest();
+            builder.Register(x => new FeedRepository()).As<IFeedRepository>().InstancePerApiRequest();
+            var container = builder.Build();
+            DependencyResolver.SetResolver(new AutofacDependencyResolver(container));
+            config.DependencyResolver = new AutofacWebApiDependencyResolver(container);
         }
     }
 }

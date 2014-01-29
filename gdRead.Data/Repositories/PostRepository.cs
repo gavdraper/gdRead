@@ -7,16 +7,17 @@ using Dapper;
 using DapperExtensions;
 using gdRead.Data.Models;
 using gdRead.Data.Models.Dto;
+using gdRead.Data.Repositories.Interfaces;
 
 namespace gdRead.Data.Repositories
 {
-    public class PostRepository
+    public class PostRepository : IPostRepository
     {
         private readonly string _conStr;
 
-        public PostRepository(string conStr)
+        public PostRepository()
         {
-            _conStr = conStr;
+            _conStr = ConfigurationManager.ConnectionStrings["gdRead.Data.gdReadContext"].ConnectionString;
         }
 
         public DateTime GetLastPostDateInFeed(int feedId)

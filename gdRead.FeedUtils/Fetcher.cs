@@ -1,27 +1,28 @@
 ﻿using System;
 using System.Linq;
-using System.Net;
 using System.ServiceModel.Syndication;
 using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Linq;
 using gdRead.Data.Models;
-using gdRead.Data.Repositories;
+using gdRead.Data.Repositories.Interfaces;
 
 namespace gdRead.FeedUtils
 {
     public class Fetcher
     {
 
-        private readonly string _conStr;
-        public Fetcher(string conStr)
+        private IFeedRepository feedRepository;
+        private IPostRepository postRepository;
+
+        public Fetcher(IFeedRepository feedRepository, IPostRepository postRepository)
         {
-            _conStr = conStr;
+            this.feedRepository = feedRepository;
+            this.postRepository = postRepository;
         }
 
         private DateTime getLastPublishDate(Feed feed)
         {
-            var postRepository = new PostRepository(_conStr);
             return postRepository.GetLastPostDateInFeed(feed.Id);
         }
 
@@ -29,8 +30,6 @@ namespace gdRead.FeedUtils
         {
             try
             {
-                var feedRepository = new FeedRepository(_conStr);
-                var postRepository = new PostRepository(_conStr);
                 var feed = feedRepository.GetFeedById(feedId);
                 if (feed.LastChecked != null && feed.LastChecked.Value > DateTime.Now.AddMinutes(-10))
                     return;
@@ -107,7 +106,6 @@ namespace gdRead.FeedUtils
 
         public void FetchAllFeeds()
         {
-            var feedRepository = new FeedRepository(_conStr);
             var feeds = feedRepository.GetAllFeeds();
             Parallel.ForEach(feeds, feed => FetchFeed(feed.Id));
         }

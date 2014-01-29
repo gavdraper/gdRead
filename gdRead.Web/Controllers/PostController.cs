@@ -1,22 +1,26 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Web;
 using System.Web.Http;
 using gdRead.Data.Models;
-using gdRead.Data.Repositories;
+using gdRead.Data.Repositories.Interfaces;
 using Microsoft.AspNet.Identity;
 
 namespace gdRead.Web.Controllers
 {     
     public class PostController : ApiController
     {
-        private readonly string _conStr = ConfigurationManager.ConnectionStrings["gdRead.Data.gdReadContext"].ConnectionString;
+        private IPostRepository postRepository;
+
+        public PostController(IPostRepository postRepository)
+        {
+            this.postRepository = postRepository;
+        }
+
         // GET api/<controller>
        public IEnumerable<Post> Get(int id, int page, string filter)
         {
             var filterByUnread = filter == "unread";
-           var postRepository = new PostRepository(_conStr);
            var userId = Guid.Parse(HttpContext.Current.User.Identity.GetUserId());
            return postRepository.GetPostDtoWithNameFromFeedWithoutContent(id, userId, page, filterByUnread);
        }
@@ -24,11 +28,9 @@ namespace gdRead.Web.Controllers
        public IEnumerable<Post> Get(int page, string filter)
        {
            var filterByUnread = filter == "unread";
-           var postRepository = new PostRepository(_conStr);
            var userId = Guid.Parse(HttpContext.Current.User.Identity.GetUserId());
            return postRepository.GetPostDtoFromSubscriptionWithoutContent(userId, page, filterByUnread);
        }
-
 
         public class PostContent
         {
@@ -38,7 +40,6 @@ namespace gdRead.Web.Controllers
 
        public PostContent Get(int postId, bool contentOnly)
        {
-           var postRepository = new PostRepository(_conStr);
            return new PostContent()
            {
                PostId = postId,

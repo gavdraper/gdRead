@@ -1,20 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Data.SqlClient;
 using System.Linq;
 using DapperExtensions;
 using gdRead.Data.Models;
 using Dapper;
+using gdRead.Data.Repositories.Interfaces;
 using gdRead.Data.ViewModels;
 
 namespace gdRead.Data.Repositories
 {
-    public class FeedRepository
+
+    public class FeedRepository : IFeedRepository
     {
         private readonly string _conStr;
-        public FeedRepository(string conStr)
+        public FeedRepository()
         {
-            _conStr = conStr;
+            _conStr = ConfigurationManager.ConnectionStrings["gdRead.Data.gdReadContext"].ConnectionString;
         }
 
         public Feed AddFeed(Feed feed)
