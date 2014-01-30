@@ -240,7 +240,7 @@ namespace gdRead.Data.Repositories
 						Post.Id, Post.Name, Post.Url, Post.PublishDate, Post.DateFetched, Post.FeedId
 						,0 AS [Read]
 						,Feed.Title As FeedTitle
-                        1
+                        ,1 AS [Starred]
 					FROM 
 						Post
 						INNER JOIN StaredPost ON StaredPost.PostId = Post.Id

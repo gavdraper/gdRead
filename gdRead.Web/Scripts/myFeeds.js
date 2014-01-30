@@ -32,7 +32,7 @@ gdRead.app.factory("feedService", ["$http", "$rootScope", "$timeout", function (
         },
 
         getStaredPosts: function (page) {
-            return $http.post("/api/StaredPost/" + page);
+            return $http.get("/api/StaredPost/" + page);
         },
         starPost: function (postId) {
             return $http.post("/api/StaredPost/" + postId);
@@ -67,7 +67,10 @@ gdRead.app.controller("myFeedCtrl", ["$scope", "feedService", "$modal", "$timeou
         var postFeedRequest;
         if ($scope.currentFeed.Id != null)
             postFeedRequest = feedService.loadPosts($scope.currentFeed.Id, $scope.currentPage, $scope.currentFilter);
-        else postFeedRequest = feedService.loadAllPosts($scope.currentPage, $scope.currentFilter);
+        else if ($scope.currentFeed.starFeed)
+            postFeedRequest = feedService.getStaredPosts($scope.currentPage);
+        else
+            postFeedRequest = feedService.loadAllPosts($scope.currentPage, $scope.currentFilter);
         postFeedRequest.success(function (posts) {
             $scope.currentPage++;
             if (!$scope.currentPosts)
@@ -86,6 +89,16 @@ gdRead.app.controller("myFeedCtrl", ["$scope", "feedService", "$modal", "$timeou
     };
 
     $scope.currentFilter = "unread";
+
+    $scope.viewStarredPosts = function() {
+        $scope.currentPage = 1;
+        $scope.currentPosts = null;
+        for (var i = 0; i < $scope.feeds.length; i++) {
+            $scope.feeds[i].selected = false;
+        }
+        $scope.currentFeed = { starFeed: true, Title:"Starred Posts" };
+        $scope.loadNextPage();
+    };
 
     $scope.filter = function (type) {
         $scope.currentFilter = type;
@@ -151,8 +164,15 @@ gdRead.app.controller("myFeedCtrl", ["$scope", "feedService", "$modal", "$timeou
     $scope.unStarPost = function (post) {
         var starPost = feedService.unStarPost(post.Id);
         starPost.success(function () {
-            post.Starred =false;
+            post.Starred = false;
+            if ($scope.currentFeed.starFeed) {
+                for (var i = 0; i < $scope.currentPosts.length; i++) {
+                    if($scope.currentPosts[i].Id == post.Id)
+                        $scope.currentPosts.splice(i, 1);
+                }                    
+            }
         });
+
     };
 
     $scope.selectPost = function (post) {

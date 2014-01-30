@@ -36,7 +36,7 @@
                     <li class="FeedItem">
                         <button ng-class="{SelectedFeed:currentFeed.Title == 'All Feeds' }" ng-click=" selectAllFeeds()">All Feeds</button>
                     </li>
-                    <hr/>
+                    <hr />
                     <li ng-repeat="feed in feeds" class="FeedItem">
                         <button ng-click="feedSelected(feed)" ng-class="{SelectedFeed:feed.selected}" ng-class="{UnReadPost:feed.UnreadCount>0}">
                             <div class="FeedTitle" ng-class="{UnReadPost:feed.UnreadCount>0}">{{feed.Title}}</div>
@@ -45,7 +45,12 @@
                         </button>
                     </li>
                 </ul>
-                Starred<br />
+                
+                <div class="FeedItem">
+                    <button ng-click="viewStarredPosts()" ng-class="{SelectedFeed:currentFeed.starFeed}">Starred</button>
+                </div>
+                
+                
 
                 Folders
                 <hr />
@@ -56,8 +61,8 @@
             <div class="PostContainer">
                 {{postError}}
                 <div ng-show="currentPosts" id="feedToolBar">
-                    <div class="text-right" >
-                       &nbsp;
+                    <div class="text-right">
+                        &nbsp;
                         <button ng-show="currentFeed.Title!='All Feeds'" ng-click="unsubscribe(currentFeed)">Unsubscribe</button>
                         <button ng-show="currentFeed.Title!='All Feeds'">Refresh</button>
                         <button ng-show="currentFeed.Title!='All Feeds'" ng-click="markFeedAsRead(currentFeed)">Mark All As Read</button>

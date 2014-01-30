@@ -18,9 +18,11 @@ namespace gdRead.Web
             config.Routes.MapHttpRoute(
                 name: "StaredPosts",
                 routeTemplate: "api/Post/Stared/{id}",
-                defaults: new { controller = "StaredPostController", id = RouteParameter.Optional }
+                defaults: new { controller = "StaredPostController"}
             );
 
+
+    
             config.Routes.MapHttpRoute(
                 name: "PostNoContent",
                 routeTemplate: "api/{controller}/ContentOnly/{postId}/{contentOnly}",

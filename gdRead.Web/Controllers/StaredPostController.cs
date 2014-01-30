@@ -17,10 +17,10 @@ namespace gdRead.Web.Controllers
             this._postRepository = postRepository;
         }
 
-        public IEnumerable<Post> Get(int page)
+        public IEnumerable<Post> Get(int id)
         {
             var userId = Guid.Parse(HttpContext.Current.User.Identity.GetUserId());
-            return _postRepository.GetStaredPostsWithoutContent(userId,page);
+            return _postRepository.GetStaredPostsWithoutContent(userId,id);
         }
 
         public void Post(int id)
