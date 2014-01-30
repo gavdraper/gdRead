@@ -5,7 +5,7 @@ gdReader
 
 Trello board for development can be found at https://trello.com/b/bWAcRppU
 
-The latest build can be seen running (for now) at http://gdread.azurewebsites.net
+The latest build can be seen running (for now) at http://gdReader.com
 
 ## Project Breakdown ##
 
