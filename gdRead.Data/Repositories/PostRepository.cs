@@ -104,12 +104,12 @@ namespace gdRead.Data.Repositories
 					SELECT 
 						Post.*
 						, CASE WHEN SubscriptionPostRead.Id IS NOT NULL THEN 1 ELSE 0 END AS [Read]
-                        , CASE WHEN StaredPost.PostId IS NOT NULL THEN 1 ELSE 0 END AS [Starred]
+                        , CASE WHEN StarredPost.PostId IS NOT NULL THEN 1 ELSE 0 END AS [Starred]
 					FROM 
 						Post
 						INNER JOIN Subscription ON Subscription.FeedId = Post.FeedId 
 						LEFT JOIN SubscriptionPostRead ON SubscriptionPostRead.SubscriptionId = Subscription.Id AND SubscriptionPostRead.PostId = Post.Id
-                        LEFT JOIN StaredPost ON StaredPost.UserId = Subscription.UserId AND StaredPost.PostId = Post.Id
+                        LEFT JOIN StarredPost ON StarredPost.UserId = Subscription.UserId AND StarredPost.PostId = Post.Id
 					WHERE 
 						post.FeedId = @FeedId
 						AND Subscription.UserId = @UserId
@@ -148,13 +148,13 @@ namespace gdRead.Data.Repositories
 					SELECT 
 						Post.Id, Post.Name, Post.Url, Post.PublishDate, Post.DateFetched, Post.FeedId
 						, CASE WHEN SubscriptionPostRead.Id IS NOT NULL THEN 1 ELSE 0 END AS [Read]
-                        , CASE WHEN StaredPost.PostId IS NOT NULL THEN 1 ELSE 0 END AS [Starred],
+                        , CASE WHEN StarredPost.PostId IS NOT NULL THEN 1 ELSE 0 END AS [Starred],
 						Feed.Title As FeedTitle
 					FROM 
 						Post
 						INNER JOIN Subscription ON Subscription.FeedId = Post.FeedId 
 						LEFT JOIN SubscriptionPostRead ON SubscriptionPostRead.SubscriptionId = Subscription.Id AND SubscriptionPostRead.PostId = Post.Id
-                        LEFT JOIN StaredPost ON StaredPost.UserId = Subscription.UserId AND StaredPost.PostId = Post.Id
+                        LEFT JOIN StarredPost ON StarredPost.UserId = Subscription.UserId AND StarredPost.PostId = Post.Id
 						INNER JOIN Feed ON Feed.Id = Post.FeedId
 					WHERE 
 						post.FeedId = @FeedId
@@ -179,13 +179,13 @@ namespace gdRead.Data.Repositories
 					SELECT 
 						Post.Id, Post.Name, Post.Url, Post.PublishDate, Post.DateFetched, Post.FeedId
 						, CASE WHEN SubscriptionPostRead.Id IS NOT NULL THEN 1 ELSE 0 END AS [Read]
-                        , CASE WHEN StaredPost.PostId IS NOT NULL THEN 1 ELSE 0 END AS [Starred]
+                        , CASE WHEN StarredPost.PostId IS NOT NULL THEN 1 ELSE 0 END AS [Starred]
 						,Feed.Title As FeedTitle
 					FROM 
 						Post
 						INNER JOIN Subscription ON Subscription.FeedId = Post.FeedId 
 						LEFT JOIN SubscriptionPostRead ON SubscriptionPostRead.SubscriptionId = Subscription.Id AND SubscriptionPostRead.PostId = Post.Id
-                        LEFT JOIN StaredPost ON StaredPost.UserId = Subscription.UserId AND StaredPost.PostId = Post.Id
+                        LEFT JOIN StarredPost ON StarredPost.UserId = Subscription.UserId AND StarredPost.PostId = Post.Id
 						INNER JOIN Feed ON Feed.Id = Post.FeedId
 					WHERE 
 						Subscription.UserId = @UserId
@@ -206,9 +206,9 @@ namespace gdRead.Data.Repositories
 				con.Open();
 				con.Execute(
 					@"
-						IF NOT EXISTS(SELECT UserId FROM StaredPost WHERE UserId = @UserId AND PostId = @PostId)
+						IF NOT EXISTS(SELECT UserId FROM StarredPost WHERE UserId = @UserId AND PostId = @PostId)
 							BEGIN
-							INSERT INTO StaredPost(UserId,PostId)
+							INSERT INTO StarredPost(UserId,PostId)
 							VALUES(@UserId,@PostId)
 							END
 					",
@@ -222,14 +222,14 @@ namespace gdRead.Data.Repositories
 			using (var con = new SqlConnection(_conStr))
 			{
 				con.Open();
-                con.Execute(@"DELETE FROM StaredPost WHERE UserId = @UserId AND PostID = @PostId",
+                con.Execute(@"DELETE FROM StarredPost WHERE UserId = @UserId AND PostID = @PostId",
 					new { PostId = postId, UserId = userId });
 				con.Close();
 			}
 		}
 
 
-        public IEnumerable<Post> GetStaredPostsWithoutContent(Guid userId, int page)
+        public IEnumerable<Post> GetStarredPostsWithoutContent(Guid userId, int page)
         {
             int pageSize = int.Parse(ConfigurationManager.AppSettings["PageSize"]);
             using (var con = new SqlConnection(_conStr))
@@ -243,10 +243,10 @@ namespace gdRead.Data.Repositories
                         ,1 AS [Starred]
 					FROM 
 						Post
-						INNER JOIN StaredPost ON StaredPost.PostId = Post.Id
+						INNER JOIN StarredPost ON StarredPost.PostId = Post.Id
 						INNER JOIN Feed ON Feed.Id = Post.FeedId
 					WHERE 
-						StaredPost.UserId = @UserId						
+						StarredPost.UserId = @UserId						
 					ORDER BY PublishDate DESC
 					OFFSET @Page*@PageSize ROWS
 					FETCH NEXT @PageSize ROWS ONLY"

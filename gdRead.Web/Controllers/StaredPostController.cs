@@ -8,11 +8,11 @@ using Microsoft.AspNet.Identity;
 
 namespace gdRead.Web.Controllers
 {
-    public class StaredPostController : ApiController
+    public class StarredPostController : ApiController
     {
         private IPostRepository _postRepository;
 
-        public StaredPostController(IPostRepository postRepository)
+        public StarredPostController(IPostRepository postRepository)
         {
             this._postRepository = postRepository;
         }
@@ -20,7 +20,7 @@ namespace gdRead.Web.Controllers
         public IEnumerable<Post> Get(int id)
         {
             var userId = Guid.Parse(HttpContext.Current.User.Identity.GetUserId());
-            return _postRepository.GetStaredPostsWithoutContent(userId,id);
+            return _postRepository.GetStarredPostsWithoutContent(userId,id);
         }
 
         public void Post(int id)

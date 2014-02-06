@@ -31,14 +31,14 @@ gdRead.app.factory("feedService", ["$http", "$rootScope", "$timeout", function (
             return $http.delete("/Api/Feed/" + feed.Id);
         },
 
-        getStaredPosts: function (page) {
-            return $http.get("/api/StaredPost/" + page);
+        getStarredPosts: function (page) {
+            return $http.get("/api/StarredPost/" + page);
         },
         starPost: function (postId) {
-            return $http.post("/api/StaredPost/" + postId);
+            return $http.post("/api/StarredPost/" + postId);
         },
         unStarPost: function (postId) {
-            return $http.delete("/api/StaredPost/" + postId);
+            return $http.delete("/api/StarredPost/" + postId);
         },
 
 
@@ -68,7 +68,7 @@ gdRead.app.controller("myFeedCtrl", ["$scope", "feedService", "$modal", "$timeou
         if ($scope.currentFeed.Id != null)
             postFeedRequest = feedService.loadPosts($scope.currentFeed.Id, $scope.currentPage, $scope.currentFilter);
         else if ($scope.currentFeed.starFeed)
-            postFeedRequest = feedService.getStaredPosts($scope.currentPage);
+            postFeedRequest = feedService.getStarredPosts($scope.currentPage);
         else
             postFeedRequest = feedService.loadAllPosts($scope.currentPage, $scope.currentFilter);
         postFeedRequest.success(function (posts) {

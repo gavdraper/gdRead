@@ -16,9 +16,9 @@ namespace gdRead.Web
             config.MapHttpAttributeRoutes();
 
             config.Routes.MapHttpRoute(
-                name: "StaredPosts",
-                routeTemplate: "api/Post/Stared/{id}",
-                defaults: new { controller = "StaredPostController"}
+                name: "StarredPosts",
+                routeTemplate: "api/Post/Starred/{id}",
+                defaults: new { controller = "StarredPostController"}
             );
 
 
