@@ -18,5 +18,6 @@ namespace gdRead.Data.Repositories.Interfaces
         string GetPostContent(int postId);
         IEnumerable<PostDto> GetPostDtoWithNameFromFeedWithoutContent(int feedId, Guid userId, int page, bool unRead = false);
         IEnumerable<PostDto> GetPostDtoFromSubscriptionWithoutContent(Guid userId, int page, bool unRead = false);
+        int GetStarPortCount(Guid userId);
     }
 }

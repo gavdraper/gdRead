@@ -47,6 +47,12 @@ namespace gdRead.Web
                 defaults: new { controller = "Post" }
             );
 
+            config.Routes.MapHttpRoute(
+                name : "StarredPaged",
+                routeTemplate: "api/StarredPost/Filter/Count",
+                defaults: new{controller="StarredPost", Action="GetCount"}
+                );
+
   
 
             var builder = new ContainerBuilder();

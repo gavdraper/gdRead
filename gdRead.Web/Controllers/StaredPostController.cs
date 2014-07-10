@@ -34,5 +34,11 @@ namespace gdRead.Web.Controllers
              var userId = Guid.Parse(HttpContext.Current.User.Identity.GetUserId());
             _postRepository.UnStarPost(id,userId);
         }
+
+        public int GetCount()
+        {
+            var userId = Guid.Parse(HttpContext.Current.User.Identity.GetUserId());
+            return _postRepository.GetStarPortCount(userId);
+        }
     }
 }

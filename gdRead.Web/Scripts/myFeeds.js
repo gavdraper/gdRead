@@ -34,6 +34,9 @@ gdRead.app.factory("feedService", ["$http", "$rootScope", "$timeout", function (
         getStarredPosts: function (page) {
             return $http.get("/api/StarredPost/" + page);
         },
+        getStarredPostsCount: function () {
+            return $http.get("/api/StarredPost/Filter/Count");
+        },
         starPost: function (postId) {
             return $http.post("/api/StarredPost/" + postId);
         },
@@ -60,18 +63,20 @@ gdRead.app.directive('focusOn', function () {
     };
 });
 
-gdRead.app.controller("myFeedCtrl", ["$scope", "feedService", "$modal", "$timeout", "$sce", '$anchorScroll', '$location', function ($scope, feedService, $modal, $timeout, $sce, $anchorScroll, $location) {
+gdRead.app.controller("myFeedCtrl", ["$scope", "feedService", "$modal", "$timeout", function ($scope, feedService, $modal, $timeout) {
     //Scope Methods
     $scope.loadNextPage = function () {
         $scope.postError = "";
         var postFeedRequest;
-        if ($scope.currentFeed.Id != null)
+        if ($scope.currentFeed.Id) {
             postFeedRequest = feedService.loadPosts($scope.currentFeed.Id, $scope.currentPage, $scope.currentFilter);
-        else if ($scope.currentFeed.starFeed)
+        } else if ($scope.currentFeed.starFeed) {
             postFeedRequest = feedService.getStarredPosts($scope.currentPage);
-        else
+        } else {
             postFeedRequest = feedService.loadAllPosts($scope.currentPage, $scope.currentFilter);
+        }
         postFeedRequest.success(function (posts) {
+            console.log(posts);
             $scope.currentPage++;
             if (!$scope.currentPosts)
                 $scope.currentPosts = [];
@@ -79,14 +84,22 @@ gdRead.app.controller("myFeedCtrl", ["$scope", "feedService", "$modal", "$timeou
                 posts[i].PublishDate = feedService.formatDate(posts[i].PublishDate);
                 $scope.currentPosts.push(posts[i]);
             }
-            if ($scope.currentPosts.length == 0) {
-                if ($scope.currentFilter === "unread")
+            if ($scope.currentPosts.length === 0) {
+                if ($scope.currentFilter === "unread") {
                     $scope.postError = "No Unread Posts In Feed(s)";
-                else
+                } else {
                     $scope.postError = "No Posts In Feed(s)";
+                }
             }
         });
     };
+
+    var starPostCount = feedService.getStarredPostsCount();
+  
+    starPostCount.success(function (count) {
+        $scope.starCount = count;        
+    });
+
 
     $scope.currentFilter = "unread";
 
@@ -158,6 +171,7 @@ gdRead.app.controller("myFeedCtrl", ["$scope", "feedService", "$modal", "$timeou
         var starPost = feedService.starPost(post.Id);
         starPost.success(function() {
             post.Starred = true;
+            $scope.starCount++;
         });
     };
 
@@ -165,9 +179,10 @@ gdRead.app.controller("myFeedCtrl", ["$scope", "feedService", "$modal", "$timeou
         var starPost = feedService.unStarPost(post.Id);
         starPost.success(function () {
             post.Starred = false;
+            $scope.starCount--;
             if ($scope.currentFeed.starFeed) {
                 for (var i = 0; i < $scope.currentPosts.length; i++) {
-                    if($scope.currentPosts[i].Id == post.Id)
+                    if($scope.currentPosts[i].Id === post.Id)
                         $scope.currentPosts.splice(i, 1);
                 }                    
             }

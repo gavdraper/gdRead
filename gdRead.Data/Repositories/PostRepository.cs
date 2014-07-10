@@ -199,7 +199,18 @@ namespace gdRead.Data.Repositories
 			}
 		}
 
-		public void StarPost(int postId, Guid userId)
+	    public int GetStarPortCount(Guid userId)
+	    {
+            using (var con = new SqlConnection(_conStr))
+            {
+                con.Open();
+                var starCount = con.Query<int>(@"SELECT COUNT(*) FROM StarredPost WHERE UserId = @UserId", new { UserId = userId}).First();
+                con.Close();
+                return starCount;
+            }
+	    }
+
+	    public void StarPost(int postId, Guid userId)
 		{
 			using (var con = new SqlConnection(_conStr))
 			{
