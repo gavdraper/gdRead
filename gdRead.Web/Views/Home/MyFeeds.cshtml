@@ -1,6 +1,4 @@
-﻿<h2>MyFeeds</h2>
-
-<div class="container" ng-app="gdReadModule" ng-controller="myFeedCtrl" ng-cloak class="ng-cloak">
+﻿<div id="feedContainer" class="container" ng-app="gdReadModule" ng-controller="myFeedCtrl" ng-cloak class="ng-cloak">
     <div class="row">
         <div class="col-md-2">
         </div>
@@ -9,8 +7,6 @@
         <div class="col-md-2">
             <button ng-click="openAddFeedModal()" class="linkButton">+Add Feed</button>
             <br />
-            <button ng-class="{selectedFilter:currentFilter == 'unread'}" ng-click="filter('unread')" class="linkButton">Unread</button>/
-            <button ng-class="{selectedFilter:currentFilter == 'all'}" ng-click="filter('all')" class="linkButton">All</button>
             <div id="FeedList" class="visible-sm visible-xs">
                 <select ng-change="feedSelected()" ng-model="comboSelectedFeed" ng-options="feed.Title for feed in feeds">
                     <option value="default" disabled="disabled">Feeds</option>
@@ -50,9 +46,13 @@
                 <div ng-show="currentPosts" id="feedToolBar">
                     <div class="text-right">
                         &nbsp;
-                        <button ng-show="currentFeed.Title!='All Feeds'" ng-click="unsubscribe(currentFeed)">Unsubscribe</button>
-                        <button ng-show="currentFeed.Title!='All Feeds'">Refresh</button>
-                        <button ng-show="currentFeed.Title!='All Feeds'" ng-click="markFeedAsRead(currentFeed)">Mark All As Read</button>
+                        <button ng-class="{selectedFilter:currentFilter == 'unread'}" ng-click="filter('unread')" class="linkButton">Unread</button>/
+                        <button ng-class="{selectedFilter:currentFilter == 'all'}" ng-click="filter('all')" class="linkButton">All</button>
+                        <span ng-show="currentFeed.Title!='All Feeds'">
+                            <button ng-click="unsubscribe(currentFeed)">Unsubscribe</button>
+                            <button>Refresh</button>
+                            <button ng-click="markFeedAsRead(currentFeed)">Mark All As Read</button>
+                        </span>
                     </div>
                 </div>
                 <div id="is" infinite-scroll='loadNextPage()' infinite-scroll-distance='1'>

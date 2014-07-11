@@ -244,3 +244,7 @@ a:hover {
 .selectedFilter {
     font-weight: bold;
 }
+
+#feedContainer {
+    margin-top: 20px;
+}
