@@ -11,33 +11,33 @@ using gdRead.Data.Repositories.Interfaces;
 
 namespace gdRead.Data.Repositories
 {
-	public class PostRepository : IPostRepository
-	{
-		private readonly string _conStr;
+    public class PostRepository : IPostRepository
+    {
+        private readonly string _conStr;
 
-		public PostRepository()
-		{
-			_conStr = ConfigurationManager.ConnectionStrings["gdRead.Data.gdReadContext"].ConnectionString;
-		}
+        public PostRepository()
+        {
+            _conStr = ConfigurationManager.ConnectionStrings["gdRead.Data.gdReadContext"].ConnectionString;
+        }
 
-		public DateTime GetLastPostDateInFeed(int feedId)
-		{
-			using (var con = new SqlConnection(_conStr))
-			{
-				con.Open();
-				var lastPostDate = con.Query<DateTime?>("SELECT TOP 1 PublishDate FROM Post WHERE FeedId = @FeedId ORDER BY PublishDate DESC", new { FeedId =  feedId}).FirstOrDefault() ?? DateTime.MinValue;
-				con.Close();
-				return lastPostDate;
-			}
-		}
+        public DateTime GetLastPostDateInFeed(int feedId)
+        {
+            using (var con = new SqlConnection(_conStr))
+            {
+                con.Open();
+                var lastPostDate = con.Query<DateTime?>("SELECT TOP 1 PublishDate FROM Post WHERE FeedId = @FeedId ORDER BY PublishDate DESC", new { FeedId = feedId }).FirstOrDefault() ?? DateTime.MinValue;
+                con.Close();
+                return lastPostDate;
+            }
+        }
 
-		public void SetPostAsRead(int postId, Guid userId)
-		{
-			using (var con = new SqlConnection(_conStr))
-			{
-				con.Open();
-				con.Query<DateTime?>(
-					@"
+        public void SetPostAsRead(int postId, Guid userId)
+        {
+            using (var con = new SqlConnection(_conStr))
+            {
+                con.Open();
+                con.Query<DateTime?>(
+                    @"
 						DECLARE @FeedId INT 
 						SELECT @FeedId = FeedId FROM Post WHERE Id = @postId
 						DECLARE @SubscriptionId INT
@@ -48,19 +48,19 @@ namespace gdRead.Data.Repositories
 							VALUES(@SubscriptionId,@PostId)
 							END
 					"
-					,
-					new {PostId = postId, UserId = userId});
-				con.Close();
-			}
-		}
-		
-		public void SetPostsInFeedAsRead(int feedId, Guid userId)
-		{
-			using (var con = new SqlConnection(_conStr))
-			{
-				con.Open();
-				con.Query<DateTime?>(
-					@"
+                    ,
+                    new { PostId = postId, UserId = userId });
+                con.Close();
+            }
+        }
+
+        public void SetPostsInFeedAsRead(int feedId, Guid userId)
+        {
+            using (var con = new SqlConnection(_conStr))
+            {
+                con.Open();
+                con.Query<DateTime?>(
+                    @"
 					DECLARE @SubscriptionId INT
 					SELECT @SubscriptionId = Id FROM Subscription WHERE UserId = @UserId AND FeedId = @FeedId
 
@@ -78,29 +78,57 @@ namespace gdRead.Data.Repositories
 						Feed.Id = @FeedId AND
 						sr.ID IS NULL
 					"
-					,
-					new { FeedId = feedId, UserId = userId });
-				con.Close();
-			}
-		}
+                    ,
+                    new { FeedId = feedId, UserId = userId });
+                con.Close();
+            }
+        }
 
-		public Post AddPost(Post post)
-		{
-			using (var con = new SqlConnection(_conStr))
-			{
-				con.Open();
-				post.Id = con.Insert(post);
-				con.Close();
-				return post;
-			}
-		}
 
-		public IEnumerable<Post> GetPostsFromFeed(int feedId, Guid userId)
-		{
-			using (var con = new SqlConnection(_conStr))
-			{
-				con.Open();
-				var posts = con.Query<Post>(@"
+        public void SetAllAsRead(Guid userId)
+        {
+            using (var con = new SqlConnection(_conStr))
+            {
+                con.Open();
+                con.Query<DateTime?>(
+                    @"
+					INSERT INTO SubscriptionPostRead
+					SELECT
+						SubScription.Id as SubscriptionId, Post.Id
+					FROM
+						SubScription
+						INNER JOIN Feed ON Subscription.FeeDId = Feed.Id
+						INNER JOIN Post ON Post.FeedId = Feed.Id 
+						LEFT JOIN SubscriptionPostRead sr ON sr.postId = post.Id AND sr.SubscriptionId = Subscription.Id
+					WHERE
+						Subscription.UserId = @UserId AND
+						sr.ID IS NULL
+					"
+                    ,
+                    new {UserId = userId });
+                con.Close();
+            }
+        }
+
+
+
+        public Post AddPost(Post post)
+        {
+            using (var con = new SqlConnection(_conStr))
+            {
+                con.Open();
+                post.Id = con.Insert(post);
+                con.Close();
+                return post;
+            }
+        }
+
+        public IEnumerable<Post> GetPostsFromFeed(int feedId, Guid userId)
+        {
+            using (var con = new SqlConnection(_conStr))
+            {
+                con.Open();
+                var posts = con.Query<Post>(@"
 					SELECT 
 						Post.*
 						, CASE WHEN SubscriptionPostRead.Id IS NOT NULL THEN 1 ELSE 0 END AS [Read]
@@ -114,18 +142,18 @@ namespace gdRead.Data.Repositories
 						post.FeedId = @FeedId
 						AND Subscription.UserId = @UserId
 					ORDER BY PublishDate DESC
-					", new {FeedId = feedId, UserId = userId});
-				con.Close();
-				return posts;
-			}
-		}
+					", new { FeedId = feedId, UserId = userId });
+                con.Close();
+                return posts;
+            }
+        }
 
-		public string GetPostContent(int postId)
-		{
-			using (var con = new SqlConnection(_conStr))
-			{
-				con.Open();
-				var post = con.Query<string>(@"
+        public string GetPostContent(int postId)
+        {
+            using (var con = new SqlConnection(_conStr))
+            {
+                con.Open();
+                var post = con.Query<string>(@"
 					SELECT 
 						Post.Content
 					FROM 
@@ -133,18 +161,18 @@ namespace gdRead.Data.Repositories
 					WHERE 
 						post.Id = @PostId
 					", new { PostId = postId }).FirstOrDefault();
-				con.Close();
-				return post;
-			} 
-		}
+                con.Close();
+                return post;
+            }
+        }
 
-		public IEnumerable<PostDto> GetPostDtoWithNameFromFeedWithoutContent(int feedId, Guid userId, int page,  bool unRead = false)
-		{
-			int pageSize = int.Parse(ConfigurationManager.AppSettings["PageSize"]);
-			using (var con = new SqlConnection(_conStr))
-			{
-				con.Open();
-				var posts = con.Query<PostDto>(@"
+        public IEnumerable<PostDto> GetPostDtoWithNameFromFeedWithoutContent(int feedId, Guid userId, int page, bool unRead = false)
+        {
+            int pageSize = int.Parse(ConfigurationManager.AppSettings["PageSize"]);
+            using (var con = new SqlConnection(_conStr))
+            {
+                con.Open();
+                var posts = con.Query<PostDto>(@"
 					SELECT 
 						Post.Id, Post.Name, Post.Url, Post.PublishDate, Post.DateFetched, Post.FeedId
 						, CASE WHEN SubscriptionPostRead.Id IS NOT NULL THEN 1 ELSE 0 END AS [Read]
@@ -163,19 +191,19 @@ namespace gdRead.Data.Repositories
 					ORDER BY PublishDate DESC
 					OFFSET @Page*@PageSize ROWS
 					FETCH NEXT @PageSize ROWS ONLY"
-                    , new { FeedId = feedId, UserId = userId, PageSize = pageSize, Page = page-1, Unread = unRead });
-				con.Close();
-				return posts;
-			}
-		}
+                    , new { FeedId = feedId, UserId = userId, PageSize = pageSize, Page = page - 1, Unread = unRead });
+                con.Close();
+                return posts;
+            }
+        }
 
-		public IEnumerable<PostDto> GetPostDtoFromSubscriptionWithoutContent(Guid userId, int page, bool unRead = false)
-		{
-			int pageSize = int.Parse(ConfigurationManager.AppSettings["PageSize"]);
-			using (var con = new SqlConnection(_conStr))
-			{
-				con.Open();
-				var posts = con.Query<PostDto>(@"
+        public IEnumerable<PostDto> GetPostDtoFromSubscriptionWithoutContent(Guid userId, int page, bool unRead = false)
+        {
+            int pageSize = int.Parse(ConfigurationManager.AppSettings["PageSize"]);
+            using (var con = new SqlConnection(_conStr))
+            {
+                con.Open();
+                var posts = con.Query<PostDto>(@"
 					SELECT 
 						Post.Id, Post.Name, Post.Url, Post.PublishDate, Post.DateFetched, Post.FeedId
 						, CASE WHEN SubscriptionPostRead.Id IS NOT NULL THEN 1 ELSE 0 END AS [Read]
@@ -193,51 +221,51 @@ namespace gdRead.Data.Repositories
 					ORDER BY PublishDate DESC
 					OFFSET @Page*@PageSize ROWS
 					FETCH NEXT @PageSize ROWS ONLY"
-                    , new {UserId = userId, PageSize = pageSize, Page = page-1, Unread = unRead });
-				con.Close();
-				return posts;
-			}
-		}
+                    , new { UserId = userId, PageSize = pageSize, Page = page - 1, Unread = unRead });
+                con.Close();
+                return posts;
+            }
+        }
 
-	    public int GetStarPortCount(Guid userId)
-	    {
+        public int GetStarPortCount(Guid userId)
+        {
             using (var con = new SqlConnection(_conStr))
             {
                 con.Open();
-                var starCount = con.Query<int>(@"SELECT COUNT(*) FROM StarredPost WHERE UserId = @UserId", new { UserId = userId}).First();
+                var starCount = con.Query<int>(@"SELECT COUNT(*) FROM StarredPost WHERE UserId = @UserId", new { UserId = userId }).First();
                 con.Close();
                 return starCount;
             }
-	    }
+        }
 
-	    public void StarPost(int postId, Guid userId)
-		{
-			using (var con = new SqlConnection(_conStr))
-			{
-				con.Open();
-				con.Execute(
-					@"
+        public void StarPost(int postId, Guid userId)
+        {
+            using (var con = new SqlConnection(_conStr))
+            {
+                con.Open();
+                con.Execute(
+                    @"
 						IF NOT EXISTS(SELECT UserId FROM StarredPost WHERE UserId = @UserId AND PostId = @PostId)
 							BEGIN
 							INSERT INTO StarredPost(UserId,PostId)
 							VALUES(@UserId,@PostId)
 							END
 					",
-					new { PostId = postId, UserId = userId });
-				con.Close();
-			}
-		}
+                    new { PostId = postId, UserId = userId });
+                con.Close();
+            }
+        }
 
-		public void UnStarPost(int postId, Guid userId)
-		{
-			using (var con = new SqlConnection(_conStr))
-			{
-				con.Open();
+        public void UnStarPost(int postId, Guid userId)
+        {
+            using (var con = new SqlConnection(_conStr))
+            {
+                con.Open();
                 con.Execute(@"DELETE FROM StarredPost WHERE UserId = @UserId AND PostID = @PostId",
-					new { PostId = postId, UserId = userId });
-				con.Close();
-			}
-		}
+                    new { PostId = postId, UserId = userId });
+                con.Close();
+            }
+        }
 
 
         public IEnumerable<Post> GetStarredPostsWithoutContent(Guid userId, int page)

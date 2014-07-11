@@ -13,6 +13,7 @@ namespace gdRead.Data.Repositories.Interfaces
         void UnStarPost(int postId, Guid userId);
         IEnumerable<Post> GetStarredPostsWithoutContent(Guid userId, int page);
         void SetPostsInFeedAsRead(int feedId, Guid userId);
+        void SetAllAsRead(Guid userId);
         Post AddPost(Post post);
         IEnumerable<Post> GetPostsFromFeed(int feedId, Guid userId);
         string GetPostContent(int postId);

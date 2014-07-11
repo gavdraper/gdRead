@@ -213,6 +213,7 @@
     <Compile Include="Controllers\PostReadController.cs" />
     <Compile Include="Controllers\PostController.cs" />
     <Compile Include="Controllers\StaredPostController.cs" />
+    <Compile Include="Controllers\SubscribedFeedsRead.cs" />
     <Compile Include="GlimpseSecurityPolicy.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>

@@ -18,21 +18,15 @@ namespace gdRead.Web
             config.Routes.MapHttpRoute(
                 name: "StarredPosts",
                 routeTemplate: "api/Post/Starred/{id}",
-                defaults: new { controller = "StarredPostController"}
+                defaults: new { controller = "StarredPostController" }
             );
 
 
-    
+
             config.Routes.MapHttpRoute(
                 name: "PostNoContent",
                 routeTemplate: "api/{controller}/ContentOnly/{postId}/{contentOnly}",
                 defaults: new { contentOnly = true }
-            );
-
-            config.Routes.MapHttpRoute(
-                name: "DefaultApi",
-                routeTemplate: "api/{controller}/{id}",
-                defaults: new { id = RouteParameter.Optional }
             );
 
             config.Routes.MapHttpRoute(
@@ -48,12 +42,17 @@ namespace gdRead.Web
             );
 
             config.Routes.MapHttpRoute(
-                name : "StarredPaged",
+                name: "StarredPaged",
                 routeTemplate: "api/StarredPost/Filter/Count",
-                defaults: new{controller="StarredPost", Action="GetCount"}
+                defaults: new { controller = "StarredPost", Action = "GetCount" }
                 );
 
-  
+
+            config.Routes.MapHttpRoute(
+                name: "DefaultApi",
+                routeTemplate: "api/{controller}/{id}",
+                defaults: new { id = RouteParameter.Optional }
+            );
 
             var builder = new ContainerBuilder();
             builder.RegisterApiControllers(Assembly.GetExecutingAssembly());

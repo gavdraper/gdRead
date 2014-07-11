@@ -35,23 +35,22 @@
                 <div class="FeedItem">
                     <button ng-click="viewStarredPosts()" ng-class="{SelectedFeed:currentFeed.starFeed}">Starred ({{starCount}})</button>
                 </div>
-                Folders
                 <hr />
             </div>
         </div>
         <div class="col-md-10" id="FeedReadingPane">
             <div class="Header"><h2>{{currentFeed.Title}}</h2></div>
-            <div class="PostContainer">
-                {{postError}}
-                <div ng-show="currentPosts" id="feedToolBar">
+            <div class="PostContainer">                
+                <div id="feedToolBar">
                     <div class="text-right">
+                        {{postError}}
                         &nbsp;
                         <button ng-class="{selectedFilter:currentFilter == 'unread'}" ng-click="filter('unread')" class="linkButton">Unread</button>/
                         <button ng-class="{selectedFilter:currentFilter == 'all'}" ng-click="filter('all')" class="linkButton">All</button>
+                        <button ng-click="refresh(currentFeed)">Refresh</button>
+                        <button ng-click="markPostsAsRead(currentFeed)">Mark All As Read</button>
                         <span ng-show="currentFeed.Title!='All Feeds'">
                             <button ng-click="unsubscribe(currentFeed)">Unsubscribe</button>
-                            <button>Refresh</button>
-                            <button ng-click="markFeedAsRead(currentFeed)">Mark All As Read</button>
                         </span>
                     </div>
                 </div>
