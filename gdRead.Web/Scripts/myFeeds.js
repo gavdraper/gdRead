@@ -88,13 +88,19 @@ gdRead.app.controller("myFeedCtrl", ["$scope", "feedService", "$modal", "$timeou
             }
             if ($scope.currentPosts.length === 0) {
                 if ($scope.currentFilter === "unread") {
-                    $scope.postError = "No Unread Posts In Feed(s)";
+                    $scope.postError = "No Unread Posts In " + feedVsFeeds();
                 } else {
-                    $scope.postError = "No Posts In Feed(s)";
+                    $scope.postError = "No Posts In Feed" + feedVsFeeds();
                 }
             }
         });
     };
+
+    var feedVsFeeds = function() {
+        if ($scope.currentFeed.Title === "All Feeds")
+            return "Feeds";
+        else return "Feed";
+    }
 
     var starPostCount = feedService.getStarredPostsCount();
 
