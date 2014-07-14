@@ -21,7 +21,9 @@ namespace gdRead.Web
         protected void Application_AuthenticateRequest()
         {
             if (
-                HttpContext.Current.User != null && HttpContext.Current.User.Identity.IsAuthenticated && HttpContext.Current.User.Identity.Name == "GavD" 
+                HttpContext.Current.User != null && 
+                HttpContext.Current.User.Identity.IsAuthenticated && 
+                HttpContext.Current.User.IsInRole("Profiler")
                 //|| Request.IsLocal                
                 )
             {
