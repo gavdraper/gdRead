@@ -74,7 +74,7 @@
                                     <span ng-class="{UnReadPost:!post.Read}">{{post.Name}}</span>
                                 </div>
 
-                                <div class="PostDate" ng-click="selectPost(post)"><span class="visible-md visible-lg">{{post.PublishDate}}</span></div>
+                                <div class="PostDate" ng-click="selectPost(post)"><span class="visible-md visible-lg">{{post.PrettyPublishDate}}</span></div>
                                 <div class="Clear">&nbsp;</div>
                             </div>
                             <div ng-hide="!post.Selected" class="TableRow PostContent">

@@ -1,6 +1,7 @@
 ﻿using System;
 using DapperExtensions.Mapper;
 
+
 namespace gdRead.Data.Models
 {
     public class Post
@@ -14,6 +15,11 @@ namespace gdRead.Data.Models
         public DateTime PublishDate { get; set; }
         public bool Read { get; set; }        
         public DateTime DateFetched { get;set; }
+
+        public string PrettyPublishDate
+        {
+            get { return PublishDate.ToTimeAgo(); }
+        }
 
         public Post()
         {

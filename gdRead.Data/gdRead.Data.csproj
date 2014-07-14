@@ -54,6 +54,7 @@
     <Compile Include="Repositories\Interfaces\IFeedRepository.cs" />
     <Compile Include="Repositories\Interfaces\IPostRepository.cs" />
     <Compile Include="Repositories\Interfaces\ISubscriptionRepository.cs" />
+    <Compile Include="TimeAgo.cs" />
     <Compile Include="ViewModels\FeedViewModel.cs" />
     <Compile Include="Models\Post.cs" />
     <Compile Include="Models\Feed.cs" />
