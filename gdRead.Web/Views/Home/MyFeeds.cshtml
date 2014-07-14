@@ -40,21 +40,26 @@
         </div>
         <div class="col-md-10" id="FeedReadingPane">
             <div class="Header"><h2>{{currentFeed.Title}}</h2></div>
-            <div class="PostContainer">                
+            <div class="PostContainer">
                 <div id="feedToolBar">
-                    <div class="text-right">
-                        {{postError}}
-                        &nbsp;
-                        <button ng-class="{selectedFilter:currentFilter == 'unread'}" ng-click="filter('unread')" class="linkButton">Unread</button>/
-                        <button ng-class="{selectedFilter:currentFilter == 'all'}" ng-click="filter('all')" class="linkButton">All</button>
-                        <button ng-click="refresh(currentFeed)">Refresh</button>
-                        <button ng-click="markPostsAsRead(currentFeed)">Mark All As Read</button>
-                        <span ng-show="currentFeed.Title!='All Feeds'">
-                            <button ng-click="unsubscribe(currentFeed)">Unsubscribe</button>
-                        </span>
+                    <div>
+                        <div class="container" style="width:950px;padding:0;">
+                            <div class="col-md-3">
+                                <button ng-class="{selectedFilter:currentFilter == 'unread'}" ng-click="filter('unread')" class="linkButton" style="padding-left:0;">Unread</button>/
+                                <button ng-class="{selectedFilter:currentFilter == 'all'}" ng-click="filter('all')" class="linkButton">All</button>
+                            </div>
+                            <div class="col-md-9 text-right">
+                                <button ng-click="refresh(currentFeed)">Refresh</button>
+                                <button ng-click="markPostsAsRead(currentFeed)">Mark All As Read</button>
+                                <span ng-show="currentFeed.Title!='All Feeds'">
+                                    <button ng-click="unsubscribe(currentFeed)">Unsubscribe</button>
+                                </span>
+                            </div>
+                        </div>
                     </div>
                 </div>
-                <div id="is" infinite-scroll='loadNextPage()' infinite-scroll-distance='1'>
+                <div class="TableRow" style="padding-left:10px;">{{postError}}</div>
+                <div id="is" infinite-scroll='loadNextPage()' infinite-scroll-distance='1'>                    
                     <div ng-repeat="post in currentPosts">
                         <div ng-class-odd="'TableRow'" ng-class-even="'AlternatingTableRow'" class="PostContainer">
                             <div class="PostHeader">
