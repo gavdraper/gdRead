@@ -33,6 +33,7 @@ namespace gdRead.Data.Models
         {
             Table("Post");
             Map(m => m.Read).Ignore();
+            Map(m => m.PrettyPublishDate).Ignore();
             AutoMap();
         }
     }
